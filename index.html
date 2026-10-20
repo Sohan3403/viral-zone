@@ -10,7 +10,6 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* Disable Text & Image Selection */
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
@@ -70,6 +69,7 @@
             margin-bottom: 30px;
             border: 1px solid #2a2a32;
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            position: relative;
         }
 
         .cover-container {
@@ -83,7 +83,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            pointer-events: none; /* Disables Right Click / Long Press Save */
+            pointer-events: none;
         }
 
         .video-info {
@@ -152,12 +152,39 @@
             display: none;
             width: 100%;
             margin-top: 15px;
-            position: relative;
         }
 
         .player-wrapper video {
             width: 100%;
             border-radius: 8px;
+        }
+
+        .admin-controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .edit-btn {
+            background: #ff9800;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .delete-btn {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
         }
 
         .modal {
@@ -194,17 +221,56 @@
             margin-top: 15px;
         }
 
-        .admin-section {
+        .admin-trigger {
+            text-align: center;
+            margin-top: 40px;
+            opacity: 0.3;
+        }
+
+        .admin-trigger button {
+            background: transparent;
+            border: none;
+            color: #888;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .admin-modal-content {
             background: #18181c;
             padding: 25px;
             border-radius: 12px;
-            margin-top: 50px;
-            border: 1px dashed #7a00ff;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid #7a00ff;
+            box-shadow: 0 0 25px rgba(122,0,255,0.5);
+            position: relative;
         }
 
-        .admin-section h3 {
-            color: #7a00ff;
-            margin-bottom: 15px;
+        .close-admin-popup {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff0055;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
         }
 
         .input-group {
@@ -229,16 +295,6 @@
             border-radius: 5px;
         }
 
-        .input-group input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            background: #22222a;
-            border: 1px dashed #7a00ff;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
         .submit-btn {
             background: #7a00ff;
             color: white;
@@ -256,7 +312,7 @@
         }
     </style>
 </head>
-<body oncontextmenu="return false;"> <!-- Right Click Disabled -->
+<body oncontextmenu="return false;">
 
     <header>
         <h1>VIRAL ZONE</h1>
@@ -271,9 +327,20 @@
 
         <div id="video-feed"></div>
 
-        <div class="admin-section">
-            <h3>➕ অ্যাডমিন প্যানেল: সরাসরি ছবি ও ভিডিও আপলোড করুন</h3>
+        <div class="admin-trigger">
+            <button onclick="openAdminWithPassword()">🔒 Owner Login</button>
+        </div>
+
+    </div>
+
+    <!-- Protected Admin Panel Popup -->
+    <div class="admin-modal" id="admin-popup">
+        <div class="admin-modal-content">
+            <button class="close-admin-popup" onclick="closeAdminPopup()">✕ Close</button>
+            <h3 style="color:#7a00ff; margin-bottom:15px;" id="form-title">➕ নতুন ভিডিও আপলোড করুন</h3>
             <form id="add-video-form">
+                <input type="hidden" id="edit-video-id">
+
                 <div class="input-group">
                     <label>১. ভিডিও শিরোনাম (Title)</label>
                     <input type="text" id="video-title-input" placeholder="যেমন: নতুন ভাইরাল ক্লিপ" required>
@@ -285,26 +352,26 @@
                 </div>
 
                 <div class="input-group">
-                    <label>৩. কভার ছবি ফাইল সিলেক্ট করুন (Direct Cover Photo Upload)</label>
-                    <input type="file" id="video-cover-file" accept="image/*" required>
+                    <label>৩. কভার ছবির লিঙ্ক (Cover Image Direct Link/URL)</label>
+                    <input type="url" id="video-cover-url" placeholder="https://i.imgur.com/example.jpg" required>
                 </div>
 
                 <div class="input-group">
-                    <label>৪. মেইন ভিডিও ফাইল সিলেক্ট করুন (Direct Video File Upload)</label>
-                    <input type="file" id="video-src-file" accept="video/*" required>
+                    <label>৪. মেইন ভিডিও লিঙ্ক (Video Direct Link/MP4 URL)</label>
+                    <input type="url" id="video-src-url" placeholder="https://example.com/video.mp4" required>
                 </div>
 
                 <div class="input-group">
-                    <label>৫. অ্যাডসের ডিরেক্ট লিংক (Adsterra Direct Link)</label>
+                    <label>৫. অ্যাডসের ডিরেক্ট লিঙ্ক (Adsterra Direct Link)</label>
                     <input type="url" id="video-ad-input" placeholder="https://www.highrevenuegate.com/your-ad-link" required>
                 </div>
 
-                <button type="submit" class="submit-btn">ভিডিও যুক্ত করুন (Publish)</button>
+                <button type="submit" class="submit-btn" id="submit-btn-text">ভিডিও যুক্ত করুন (Publish)</button>
             </form>
         </div>
-
     </div>
 
+    <!-- Ad Popup Box -->
     <div class="modal" id="ad-modal">
         <div class="modal-content">
             <h3>বিজ্ঞাপন দেখা হচ্ছে...</h3>
@@ -315,7 +382,39 @@
     </div>
 
     <script>
-        // Disable Keyboard Shortcuts (F12, Ctrl+Shift+I, Ctrl+U etc.)
+        const ADMIN_PASSWORD = "Rms34@3";
+        let isAdminLoggedIn = false;
+
+        function openAdminWithPassword() {
+            if(!isAdminLoggedIn) {
+                const userPass = prompt("অ্যাডমিন প্যানেল খুলতে পাসওয়ার্ড দিন:");
+                if (userPass === ADMIN_PASSWORD) {
+                    isAdminLoggedIn = true;
+                    resetForm();
+                    document.getElementById('admin-popup').style.display = 'flex';
+                    renderVideos();
+                } else if (userPass !== null) {
+                    alert("ভুল পাসওয়ার্ড!");
+                }
+            } else {
+                resetForm();
+                document.getElementById('admin-popup').style.display = 'flex';
+            }
+        }
+
+        function closeAdminPopup() {
+            document.getElementById('admin-popup').style.display = 'none';
+            resetForm();
+        }
+
+        function resetForm() {
+            document.getElementById('add-video-form').reset();
+            document.getElementById('edit-video-id').value = '';
+            document.getElementById('form-title').innerText = '➕ নতুন ভিডিও আপলোড করুন';
+            document.getElementById('submit-btn-text').innerText = 'ভিডিও যুক্ত করুন (Publish)';
+        }
+
+        // Disable Keyboard Shortcuts
         document.onkeydown = function(e) {
             if(e.keyCode == 123) return false;
             if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
@@ -324,7 +423,7 @@
             if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
         }
 
-        let videos = [
+        let defaultVideos = [
             {
                 id: 1,
                 title: "আজকের সেরা ভাইরাল ট্রেন্ডিং নিউজ ক্লিপ!",
@@ -336,133 +435,5 @@
             }
         ];
 
-        let activeVideoId = null;
-        let activeAdIndex = null;
-        let timerInterval = null;
-
-        function renderVideos() {
-            const feed = document.getElementById('video-feed');
-            feed.innerHTML = '';
-
-            videos.forEach(v => {
-                const isUnlocked = v.adsWatched >= 5;
-
-                const card = document.createElement('div');
-                card.className = 'video-card';
-                card.innerHTML = `
-                    <div class="cover-container">
-                        <img src="${v.cover}" class="cover-img" alt="Cover Photo">
-                    </div>
-                    <div class="video-info">
-                        <h2 class="video-title">${v.title}</h2>
-                        <p class="video-desc">${v.desc}</p>
-
-                        <div class="ads-section">
-                            <div class="ads-title">
-                                <span>🔒 ভিডিও আনলক টাস্ক (${v.adsWatched}/5)</span>
-                                <span>${isUnlocked ? '✅ Unlocked' : '⏳ Locked'}</span>
-                            </div>
-                            <div class="ads-buttons">
-                                ${[1, 2, 3, 4, 5].map(i => `
-                                    <button class="ad-btn ${i <= v.adsWatched ? 'watched' : ''}" 
-                                        onclick="openAdModal(${v.id},${i})" 
-                                        ${i <= v.adsWatched ? 'disabled' : ''}>
-                                        ${i <= v.adsWatched ? '✓ Done' : 'Ads Video ' + i}
-                                    </button>
-                                `).join('')}
-                            </div>
-                        </div>
-
-                        <div class="player-wrapper" id="player-${v.id}" style="display: ${isUnlocked ? 'block' : 'none'};">
-                            <h4 style="color:#2e7d32; margin-bottom:10px;">🎉 আপনার ভিডিও আনলক হয়েছে!</h4>
-                            <!-- Added controlsList nodownload & disablePictureInPicture -->
-                            <video controls controlsList="nodownload noremoteplayback" disablePictureInPicture oncontextmenu="return false;" src="${v.videoUrl}"></video>
-                        </div>
-                    </div>
-                `;
-                feed.appendChild(card);
-            });
-        }
-
-        function openAdModal(videoId, adIndex) {
-            activeVideoId = videoId;
-            activeAdIndex = adIndex;
-
-            const video = videos.find(v => v.id === videoId);
-            
-            if(video && video.adLink) {
-                window.open(video.adLink, '_blank');
-            }
-
-            const modal = document.getElementById('ad-modal');
-            const closeBtn = document.getElementById('close-ad-btn');
-            const secondsSpan = document.getElementById('seconds');
-            const timerText = document.getElementById('timer-text');
-
-            modal.style.display = 'flex';
-            closeBtn.style.display = 'none';
-            timerText.style.display = 'block';
-
-            let timeLeft = 5;
-            secondsSpan.innerText = timeLeft;
-
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                secondsSpan.innerText = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    timerText.style.display = 'none';
-                    closeBtn.style.display = 'inline-block';
-                }
-            }, 1000);
-        }
-
-        function completeAd() {
-            document.getElementById('ad-modal').style.display = 'none';
-            
-            const video = videos.find(v => v.id === activeVideoId);
-            if (video && activeAdIndex > video.adsWatched) {
-                video.adsWatched = activeAdIndex;
-            }
-
-            renderVideos();
-        }
-
-        document.getElementById('add-video-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const title = document.getElementById('video-title-input').value;
-            const desc = document.getElementById('video-desc-input').value;
-            const coverFile = document.getElementById('video-cover-file').files[0];
-            const videoFile = document.getElementById('video-src-file').files[0];
-            const adLink = document.getElementById('video-ad-input').value;
-
-            if(!coverFile || !videoFile) {
-                alert('অনুগ্রহ করে কভার ছবি এবং ভিডিও ফাইল নির্বাচন করুন।');
-                return;
-            }
-
-            const coverUrl = URL.createObjectURL(coverFile);
-            const videoUrl = URL.createObjectURL(videoFile);
-
-            const newVid = {
-                id: Date.now(),
-                title: title,
-                desc: desc,
-                cover: coverUrl,
-                videoUrl: videoUrl,
-                adLink: adLink,
-                adsWatched: 0
-            };
-
-            videos.unshift(newVid);
-            renderVideos();
-
-            this.reset();
-            alert('নতুন ভিডিও এবং ছবি সফলভাবে আপলোড হয়েছে!');
-        });
-
-        renderVideos();
-    </script>
-</body>
-</html>
+        let savedVideos = localStorage.getItem('viral_zone_videos');
+        let videos = savedVideos ?
