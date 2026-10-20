@@ -531,7 +531,7 @@
         const defaultVideos = [
             {
                 id: 101,
-                title: "🔥 নতুন ভাইরাল ট্রেন্ডিং ক্লিপ!",
+                title: "🔥 ভাইরাল গোলাপি মেম এর নতুন ভাইরাল ভিডিও! 🤩 🎬",
                 desc: "ভিডিওটি দেখার জন্য নিচে দেওয়া ৫টি বিজ্ঞাপন বাটন এক এক করে সম্পূর্ণ করুন।",
                 cover: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
                 videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
@@ -594,7 +594,7 @@
 
                         <div class="player-wrapper" id="player-${v.id}" style="display: ${isUnlocked ? 'block' : 'none'};">
                             <h4 style="color:#2e7d32; margin-bottom:10px;">🎉 আপনার ভিডিও আনলক হয়েছে!</h4>
-                            <video controls controlsList="nodownload noremoteplayback" disablePictureInPicture oncontextmenu="return false;" src="${v.videoUrl}"></video>
+                            <video controls controlsList="nodownload noremoteplayback" disablePictureInPicture oncontextmenu="return false;" preload="auto" src="${v.videoUrl}"></video>
                         </div>
 
                         ${isAdminLoggedIn ? `
@@ -672,8 +672,8 @@
             const title = document.getElementById('video-title-input').value;
             const desc = document.getElementById('video-desc-input').value;
             const coverFile = document.getElementById('video-cover-file').files[0];
-            const videoUrlInput = document.getElementById('video-src-url').value;
-            const adLink = document.getElementById('video-ad-input').value;
+            let videoUrlInput = document.getElementById('video-src-url').value.trim();
+            const adLink = document.getElementById('video-ad-input').value.trim();
 
             let coverUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80";
 
@@ -689,7 +689,7 @@
                     if (coverFile) videos[videoIndex].cover = coverUrl;
                     videos[videoIndex].videoUrl = videoUrlInput;
                     videos[videoIndex].adLink = adLink;
-                    alert('ভিডিও সফলভাবে আপডেট করা হয়েছে!');
+                    alert('ভিডিও তথ্য সফলভাবে আপডেট করা হয়েছে!');
                 }
             } else {
                 const newVid = {
@@ -708,6 +708,10 @@
             saveToStorage();
             renderVideos();
             closeAdminPopup();
+            
+            // Auto reload player elements
+            const players = document.querySelectorAll('video');
+            players.forEach(p => p.load());
         });
 
         function editVideo(id) {
