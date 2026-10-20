@@ -49,18 +49,22 @@
         /* Top Featured Image Banner */
         .featured-banner {
             width: 100%;
-            max-height: 380px;
+            max-height: 450px;
             border-radius: 12px;
             overflow: hidden;
             margin-bottom: 20px;
             border: 2px solid #ff0055;
-            box-shadow: 0 4px 20px rgba(255, 0, 85, 0.3);
+            box-shadow: 0 4px 20px rgba(255, 0, 85, 0.4);
             background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .featured-banner img {
             width: 100%;
-            height: 100%;
+            height: auto;
+            max-height: 450px;
             object-fit: cover;
             display: block;
         }
@@ -69,6 +73,8 @@
         .telegram-btn-box {
             text-align: center;
             margin-bottom: 25px;
+            position: relative;
+            z-index: 100;
         }
 
         .telegram-btn {
@@ -80,13 +86,14 @@
             padding: 14px 28px;
             border-radius: 30px;
             text-decoration: none;
-            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.5);
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .telegram-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 136, 204, 0.6);
+            box-shadow: 0 6px 20px rgba(0, 136, 204, 0.8);
             background: linear-gradient(135deg, #00aaff, #0077b3);
         }
 
@@ -338,6 +345,7 @@
 
         .input-group input[type="text"],
         .input-group input[type="url"],
+        .input-group input[type="file"],
         .input-group textarea {
             width: 100%;
             padding: 10px;
@@ -386,14 +394,14 @@
             <script type="text/javascript" src="https://www.highrevenueformat.com/61b6cf64ff09c351802afc2bf7de1189/invoke.js"></script>
         </div>
 
-        <!-- Featured Banner Image (Replace 'YOUR_IMAGE_URL_HERE' with your image link) -->
+        <!-- Featured Cute Girl Image Banner -->
         <div class="featured-banner">
-            <img src="YOUR_IMAGE_URL_HERE" alt="Viral Zone Featured Image" onerror="this.src='https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=800&q=80'">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80" alt="Viral Zone Featured Girl" id="top-featured-img">
         </div>
 
-        <!-- Telegram Join Button -->
+        <!-- Working Telegram Join Button -->
         <div class="telegram-btn-box">
-            <a href="https://t.me/vairal404" target="_blank" class="telegram-btn">
+            <a href="https://t.me/vairal404" target="_blank" rel="noopener noreferrer" class="telegram-btn" onclick="window.open('https://t.me/vairal404', '_blank'); return false;">
                 ✈️ Join Our Official Telegram Channel
             </a>
         </div>
@@ -407,7 +415,7 @@
 
     </div>
 
-    <!-- Hidden Admin Panel Modal -->
+    <!-- Protected Hidden Admin Panel Modal with File Upload Options -->
     <div class="admin-modal" id="admin-popup">
         <div class="admin-modal-content">
             <button class="close-admin-popup" onclick="closeAdminPopup()">✕ Close</button>
@@ -426,13 +434,13 @@
                 </div>
 
                 <div class="input-group">
-                    <label>৩. কভার ছবির লিঙ্ক (Cover Image Direct Link/URL)</label>
-                    <input type="url" id="video-cover-url" placeholder="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7" required>
+                    <label>৩. কভার ফটো সিলেক্ট করুন (Cover Image File Upload)</label>
+                    <input type="file" id="video-cover-file" accept="image/*">
                 </div>
 
                 <div class="input-group">
-                    <label>৪. মেইন ভিডিও লিঙ্ক (Video Direct Link/MP4 URL)</label>
-                    <input type="url" id="video-src-url" placeholder="https://www.w3schools.com/html/mov_bbb.mp4" required>
+                    <label>৪. মেইন ভিডিও সিলেক্ট করুন (Video MP4 File Upload)</label>
+                    <input type="file" id="video-src-file" accept="video/*">
                 </div>
 
                 <div class="input-group">
@@ -527,7 +535,7 @@
                 id: 101,
                 title: "🔥 আজ রাতের সবচেয়ে নতুন ভাইরাল ট্রেন্ডিং ভিডিও!",
                 desc: "ভিডিওটি দেখার জন্য নিচে দেওয়া ৫টি বিজ্ঞাপন বাটন এক এক করে সম্পূর্ণ করুন। ৫টি বিজ্ঞাপন দেখা শেষ হলেই আপনার প্লেয়ারটি আনলক হয়ে যাবে!",
-                cover: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=800&q=80",
+                cover: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
                 videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
                 adLink: "https://pl24148820.profitableratecpmnetwork.com/2d/7d/6e/2d7d6ef589dddc38c42ec94f414d5429.js",
                 adsWatched: 0
@@ -646,25 +654,45 @@
             renderVideos();
         }
 
-        document.getElementById('add-video-form').addEventListener('submit', function(e) {
+        // Helper Function to convert uploaded files to Data Base64 String
+        const readFileAsDataURL = (file) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        };
+
+        document.getElementById('add-video-form').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const editId = document.getElementById('edit-video-id').value;
             const title = document.getElementById('video-title-input').value;
             const desc = document.getElementById('video-desc-input').value;
-            const coverUrl = document.getElementById('video-cover-url').value;
-            const videoUrl = document.getElementById('video-src-url').value;
+            const coverFile = document.getElementById('video-cover-file').files[0];
+            const videoFile = document.getElementById('video-src-file').files[0];
             const adLink = document.getElementById('video-ad-input').value;
+
+            let coverUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80";
+            let videoUrl = "https://www.w3schools.com/html/mov_bbb.mp4";
+
+            if (coverFile) {
+                coverUrl = await readFileAsDataURL(coverFile);
+            }
+            if (videoFile) {
+                videoUrl = await readFileAsDataURL(videoFile);
+            }
 
             if (editId) {
                 const videoIndex = videos.findIndex(v => v.id == editId);
                 if (videoIndex !== -1) {
                     videos[videoIndex].title = title;
                     videos[videoIndex].desc = desc;
-                    videos[videoIndex].cover = coverUrl;
-                    videos[videoIndex].videoUrl = videoUrl;
+                    if (coverFile) videos[videoIndex].cover = coverUrl;
+                    if (videoFile) videos[videoIndex].videoUrl = videoUrl;
                     videos[videoIndex].adLink = adLink;
-                    alert('ভিডিও সফলভাবে এডিট করা হয়েছে!');
+                    alert('ভিডিও সফলভাবে এডিট ও আপডেট করা হয়েছে!');
                 }
             } else {
                 const newVid = {
@@ -677,7 +705,7 @@
                     adsWatched: 0
                 };
                 videos.unshift(newVid);
-                alert('নতুন ভিডিও সফলভাবে যুক্ত করা হয়েছে!');
+                alert('নতুন ভিডিও ফাইল সফলভাবে আপলোড করা হয়েছে!');
             }
 
             saveToStorage();
@@ -691,11 +719,9 @@
                 document.getElementById('edit-video-id').value = video.id;
                 document.getElementById('video-title-input').value = video.title;
                 document.getElementById('video-desc-input').value = video.desc;
-                document.getElementById('video-cover-url').value = video.cover;
-                document.getElementById('video-src-url').value = video.videoUrl;
                 document.getElementById('video-ad-input').value = video.adLink;
 
-                document.getElementById('form-title').innerText = '✏️ ভিডিও এডিট করুন';
+                document.getElementById('form-title').innerText = '✏️ ভিডিও ফাইল এডিট করুন';
                 document.getElementById('submit-btn-text').innerText = 'তথ্য আপডেট করুন (Update)';
                 document.getElementById('admin-popup').style.display = 'flex';
             }
