@@ -10,6 +10,11 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Disable Text & Image Selection */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
         body {
@@ -78,6 +83,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            pointer-events: none; /* Disables Right Click / Long Press Save */
         }
 
         .video-info {
@@ -146,6 +152,7 @@
             display: none;
             width: 100%;
             margin-top: 15px;
+            position: relative;
         }
 
         .player-wrapper video {
@@ -249,7 +256,7 @@
         }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;"> <!-- Right Click Disabled -->
 
     <header>
         <h1>VIRAL ZONE</h1>
@@ -264,7 +271,6 @@
 
         <div id="video-feed"></div>
 
-        <!-- Direct Upload Admin Panel -->
         <div class="admin-section">
             <h3>➕ অ্যাডমিন প্যানেল: সরাসরি ছবি ও ভিডিও আপলোড করুন</h3>
             <form id="add-video-form">
@@ -299,7 +305,6 @@
 
     </div>
 
-    <!-- Ad Popup Box -->
     <div class="modal" id="ad-modal">
         <div class="modal-content">
             <h3>বিজ্ঞাপন দেখা হচ্ছে...</h3>
@@ -310,6 +315,15 @@
     </div>
 
     <script>
+        // Disable Keyboard Shortcuts (F12, Ctrl+Shift+I, Ctrl+U etc.)
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) return false;
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+        }
+
         let videos = [
             {
                 id: 1,
@@ -361,7 +375,8 @@
 
                         <div class="player-wrapper" id="player-${v.id}" style="display: ${isUnlocked ? 'block' : 'none'};">
                             <h4 style="color:#2e7d32; margin-bottom:10px;">🎉 আপনার ভিডিও আনলক হয়েছে!</h4>
-                            <video controls src="${v.videoUrl}"></video>
+                            <!-- Added controlsList nodownload & disablePictureInPicture -->
+                            <video controls controlsList="nodownload noremoteplayback" disablePictureInPicture oncontextmenu="return false;" src="${v.videoUrl}"></video>
                         </div>
                     </div>
                 `;
