@@ -46,6 +46,62 @@
             padding: 0 15px;
         }
 
+        /* Top Featured Image Banner */
+        .featured-banner {
+            width: 100%;
+            max-height: 380px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 2px solid #ff0055;
+            box-shadow: 0 4px 20px rgba(255, 0, 85, 0.3);
+            background: #000;
+        }
+
+        .featured-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Telegram Join Button */
+        .telegram-btn-box {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .telegram-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #0088cc, #005580);
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 14px 28px;
+            border-radius: 30px;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .telegram-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 136, 204, 0.6);
+            background: linear-gradient(135deg, #00aaff, #0077b3);
+        }
+
+        .main-banner-ads {
+            margin: 15px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            min-height: 90px;
+            background: #18181c;
+            border-radius: 8px;
+            border: 1px dashed #333;
+        }
+
         .rules-box {
             background: #1e1e24;
             border-left: 5px solid #ff0055;
@@ -218,14 +274,6 @@
             box-shadow: 0 0 20px rgba(255,0,85,0.4);
         }
 
-        .ad-banner-container {
-            margin: 15px 0;
-            display: flex;
-            justify-content: center;
-            overflow: hidden;
-            min-height: 90px;
-        }
-
         .close-ad-btn {
             background: #ff0055;
             color: white;
@@ -238,26 +286,12 @@
             margin-top: 15px;
         }
 
-        .admin-trigger {
-            text-align: center;
-            margin-top: 40px;
-            opacity: 0.3;
-        }
-
-        .admin-trigger button {
-            background: transparent;
-            border: none;
-            color: #888;
-            font-size: 0.8rem;
-            cursor: pointer;
-        }
-
         .admin-modal {
             display: none;
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.92);
             z-index: 2000;
             justify-content: center;
             align-items: center;
@@ -338,6 +372,32 @@
 
     <div class="container">
         
+        <!-- Top Banner Ad Container -->
+        <div class="main-banner-ads">
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : '61b6cf64ff09c351802afc2bf7de1189',
+                    'format' : 'iframe',
+                    'height' : 90,
+                    'width' : 728,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="https://www.highrevenueformat.com/61b6cf64ff09c351802afc2bf7de1189/invoke.js"></script>
+        </div>
+
+        <!-- Featured Banner Image (Replace 'YOUR_IMAGE_URL_HERE' with your image link) -->
+        <div class="featured-banner">
+            <img src="YOUR_IMAGE_URL_HERE" alt="Viral Zone Featured Image" onerror="this.src='https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=800&q=80'">
+        </div>
+
+        <!-- Telegram Join Button -->
+        <div class="telegram-btn-box">
+            <a href="https://t.me/vairal404" target="_blank" class="telegram-btn">
+                ✈️ Join Our Official Telegram Channel
+            </a>
+        </div>
+
         <div class="rules-box">
             <h2>📌 ওয়েবসাইট ব্যবহারের নিয়মাবলী:</h2>
             <p>আপনার পছন্দের ভাইরাল ভিডিওটি দেখার জন্য নিচে দেওয়া <b>৫টি Ads বাটন</b> এক এক করে সম্পন্ন করুন। প্রতি এড দেখার পর টাইমার শেষ হলে তা কাউন্ট হবে। ৫টি এড দেখা শেষ হলেই আপনার মূল ভিডিও অটোমেটিক আনলক হয়ে যাবে!</p>
@@ -345,13 +405,9 @@
 
         <div id="video-feed"></div>
 
-        <div class="admin-trigger">
-            <button onclick="openAdminWithPassword()">🔒 Owner Login</button>
-        </div>
-
     </div>
 
-    <!-- Protected Admin Panel Modal -->
+    <!-- Hidden Admin Panel Modal -->
     <div class="admin-modal" id="admin-popup">
         <div class="admin-modal-content">
             <button class="close-admin-popup" onclick="closeAdminPopup()">✕ Close</button>
@@ -395,8 +451,7 @@
             <h3>বিজ্ঞাপন দেখা হচ্ছে...</h3>
             <p style="margin-top:10px; color:#ffca28;" id="timer-text">অনুগ্রহ করে <span id="seconds">5</span> সেকেন্ড অপেক্ষা করুন</p>
             
-            <!-- Banner Ad Inside Popup -->
-            <div class="ad-banner-container">
+            <div class="main-banner-ads">
                 <script type="text/javascript">
                     atOptions = {
                         'key' : '61b6cf64ff09c351802afc2bf7de1189',
@@ -417,7 +472,15 @@
         const ADMIN_PASSWORD = "Rms34@3";
         let isAdminLoggedIn = false;
 
-        function openAdminWithPassword() {
+        // Auto Trigger Admin via URL parameter or Shortcut
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('admin') || window.location.hash === '#admin') {
+                promptAdminLogin();
+            }
+        });
+
+        function promptAdminLogin() {
             if(!isAdminLoggedIn) {
                 const userPass = prompt("অ্যাডমিন প্যানেল খুলতে পাসওয়ার্ড দিন:");
                 if (userPass === ADMIN_PASSWORD) {
@@ -434,6 +497,19 @@
             }
         }
 
+        // Secret Shortcut Key: Ctrl + Shift + A
+        document.onkeydown = function(e) {
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'A'.charCodeAt(0)) {
+                e.preventDefault();
+                promptAdminLogin();
+            }
+            if(e.keyCode == 123) return false;
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+        }
+
         function closeAdminPopup() {
             document.getElementById('admin-popup').style.display = 'none';
             resetForm();
@@ -444,15 +520,6 @@
             document.getElementById('edit-video-id').value = '';
             document.getElementById('form-title').innerText = '➕ নতুন ভিডিও আপলোড করুন';
             document.getElementById('submit-btn-text').innerText = 'ভিডিও যুক্ত করুন (Publish)';
-        }
-
-        // Disable Inspect Element
-        document.onkeydown = function(e) {
-            if(e.keyCode == 123) return false;
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
         }
 
         const defaultVideos = [
@@ -539,7 +606,9 @@
             const video = videos.find(v => v.id === videoId);
             
             if(video && video.adLink) {
-                window.open(video.adLink, '_blank');
+                try {
+                    window.open(video.adLink, '_blank');
+                } catch(e) {}
             }
 
             const modal = document.getElementById('ad-modal');
