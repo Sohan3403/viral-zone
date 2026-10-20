@@ -258,6 +258,17 @@
             font-weight: bold;
         }
 
+        .reset-btn {
+            background: #607d8b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -394,7 +405,7 @@
             <script type="text/javascript" src="https://www.highrevenueformat.com/61b6cf64ff09c351802afc2bf7de1189/invoke.js"></script>
         </div>
 
-        <!-- Featured Banner Girl Image -->
+        <!-- Featured Banner Image -->
         <div class="featured-banner">
             <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80" alt="Viral Zone Featured Girl" id="top-featured-img">
         </div>
@@ -450,6 +461,8 @@
 
                 <button type="submit" class="submit-btn" id="submit-btn-text">ভিডিও যুক্ত করুন (Publish)</button>
             </form>
+
+            <button onclick="clearAllData()" class="reset-btn" style="margin-top:15px; width:100%; background:#d32f2f;">🧹 সমস্ত Corrupted Data Clear/Reset Korun</button>
         </div>
     </div>
 
@@ -540,10 +553,14 @@
             }
         ];
 
-        let savedVideos = localStorage.getItem('viral_zone_videos');
-        let videos = savedVideos ? JSON.parse(savedVideos) : defaultVideos;
-
-        if (!videos || videos.length === 0) {
+        let videos = defaultVideos;
+        try {
+            let savedVideos = localStorage.getItem('viral_zone_videos');
+            if (savedVideos) {
+                videos = JSON.parse(savedVideos);
+            }
+        } catch(e) {
+            localStorage.removeItem('viral_zone_videos');
             videos = defaultVideos;
         }
 
@@ -551,8 +568,16 @@
             try {
                 localStorage.setItem('viral_zone_videos', JSON.stringify(videos));
             } catch(e) {
-                alert("Storage limit exceeded! অনুগ্রহ করে ভিডিও লিংক ব্যবহার করুন।");
+                alert("Storage error! Local storage resetted.");
+                clearAllData();
             }
+        }
+
+        function clearAllData() {
+            localStorage.clear();
+            videos = defaultVideos;
+            renderVideos();
+            alert("সব Corrupted Data Clean kora hoyeche! Ekhon new MP4 link boshan.");
         }
 
         let activeVideoId = null;
@@ -594,7 +619,7 @@
 
                         <div class="player-wrapper" id="player-${v.id}" style="display: ${isUnlocked ? 'block' : 'none'};">
                             <h4 style="color:#2e7d32; margin-bottom:10px;">🎉 আপনার ভিডিও আনলক হয়েছে!</h4>
-                            <video controls controlsList="nodownload noremoteplayback" disablePictureInPicture oncontextmenu="return false;" preload="auto" src="${v.videoUrl}"></video>
+                            <video controls controlsList="nodownload noremoteplayback" disablePictureInPicture oncontextmenu="return false;" preload="metadata" src="${v.videoUrl}"></video>
                         </div>
 
                         ${isAdminLoggedIn ? `
@@ -708,10 +733,6 @@
             saveToStorage();
             renderVideos();
             closeAdminPopup();
-            
-            // Auto reload player elements
-            const players = document.querySelectorAll('video');
-            players.forEach(p => p.load());
         });
 
         function editVideo(id) {
