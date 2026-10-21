@@ -38,7 +38,7 @@ video::-internal-media-controls-download-button { display:none !important; }
 video::-webkit-media-controls-enclosure { overflow:hidden !important; }
 video::-webkit-media-controls-panel { width: calc(100% + 30px) !important; }
 
-.admin-btn-secret{position:absolute;right:10px;bottom:10px;background:none;border:none;color:#555;font-size:12px;cursor:pointer;padding:5px;}
+.admin-btn-secret{position:absolute;right:10px;bottom:10px;background:#222;border:1px solid #444;color:#aaa;font-size:12px;cursor:pointer;padding:6px 12px;border-radius:4px;}
 .admin-input, .admin-select, .admin-textarea{width:100%;padding:10px;margin:8px 0;background:#2b2b2b;color:#fff;border:1px solid #444;border-radius:5px}
 .danger{background:#ff4d4d;color:white}
 .video-item{background:#2b2b2b;padding:10px;margin:8px 0;border-radius:5px;display:flex;justify-content:space-between;align-items:center}
@@ -133,7 +133,7 @@ video::-webkit-media-controls-panel { width: calc(100% + 30px) !important; }
 </div>
 
 <footer>
-  © <span id="year"></span> Video Hub[cite: 1]
+  © <span id="year"></span> Video Hub
   <button class="admin-btn-secret" id="openAdminBtn">⚙ Admin</button>
 </footer>
 
@@ -142,8 +142,8 @@ video::-webkit-media-controls-panel { width: calc(100% + 30px) !important; }
 const ADMIN_PASS = "Rms34@3";
 
 // JSONBin.io Config
-const BIN_ID = "6ad88300ac6210605a45152d";[cite: 10]
-const API_KEY = "$2a$10$LG7/hGsvZiTcVhTgchdt0TWXEIynqQmZPZ./NEZcbgt6lV5ox87C";[cite: 8]
+const BIN_ID = "6ad88300ac6210605a45152d";
+const API_KEY = "$2a$10$LG7/hGsvZiTcVhTgchdt0TWXEIynqQmZPZ./NEZcbgt6lV5ox87C";
 
 const adLinks = [
   "https://www.profitableratecpmnetwork.com/r9tpq2mgt1?key=f80f32b10b8d7d996b40911857a6e971",
@@ -168,7 +168,6 @@ const confirmAdBtn = document.getElementById("confirmAdBtn");
 const adStepText = document.getElementById("adStepText");
 const adClickLink = document.getElementById("adClickLink");
 
-// Fetch Videos from JSONBin.io Cloud Database
 async function fetchVideos() {
   try {
     const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
@@ -182,7 +181,6 @@ async function fetchVideos() {
   }
 }
 
-// Save Videos to JSONBin.io Cloud Database
 async function saveVideosToCloud(newVideosArray) {
   try {
     const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
