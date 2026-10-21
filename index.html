@@ -38,11 +38,6 @@ video::-internal-media-controls-download-button { display:none !important; }
 video::-webkit-media-controls-enclosure { overflow:hidden !important; }
 video::-webkit-media-controls-panel { width: calc(100% + 30px) !important; }
 
-.admin-btn-secret{position:absolute;right:10px;bottom:10px;background:#222;border:1px solid #444;color:#aaa;font-size:12px;cursor:pointer;padding:6px 12px;border-radius:4px;}
-.admin-input, .admin-select, .admin-textarea{width:100%;padding:10px;margin:8px 0;background:#2b2b2b;color:#fff;border:1px solid #444;border-radius:5px}
-.danger{background:#ff4d4d;color:white}
-.video-item{background:#2b2b2b;padding:10px;margin:8px 0;border-radius:5px;display:flex;justify-content:space-between;align-items:center}
-
 @media(max-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}header{gap:10px}}
 @media(max-width:420px){.grid{grid-template-columns:1fr}main{padding:10px}}
 </style>
@@ -80,7 +75,7 @@ video::-webkit-media-controls-panel { width: calc(100% + 30px) !important; }
 <!-- Watch Modal & 5 Ads System -->
 <div id="watchModal" class="overlay hidden">
   <div class="watch-dialog">
-    <button id="closeWatchBtn" style="float:right;" class="danger">✕ Close</button>
+    <button id="closeWatchBtn" style="float:right;" class="danger" onclick="closeModal()">✕ Close</button>
     <h3 id="watchTitle">Video Title</h3>
     
     <div id="adVerificationArea">
@@ -106,52 +101,37 @@ video::-webkit-media-controls-panel { width: calc(100% + 30px) !important; }
   </div>
 </div>
 
-<!-- Secret Admin Modal -->
-<div id="adminModal" class="overlay hidden">
-  <div class="dialog" style="max-width:550px;text-align:left;">
-    <button id="closeAdminBtn" style="float:right;" class="danger">✕</button>
-    
-    <div id="adminLoginSection">
-      <h2>Admin Login</h2>
-      <p style="font-size:13px;color:#aaa;">Enter password:</p>
-      <input type="password" id="adminPassInput" class="admin-input" placeholder="Password">
-      <button id="adminLoginBtn" class="primary" style="width:100%;margin-top:10px;">Login</button>
-      <p id="loginErr" style="color:#ff4d4d;display:none;margin-top:8px;">Wrong Password!</p>
-    </div>
-
-    <div id="adminControlSection" class="hidden">
-      <h2>Admin Dashboard</h2>
-      <h3>Upload Video (39s Max)</h3>
-      <form id="uploadForm">
-        <input type="text" id="vTitle" class="admin-input" placeholder="Video Title" required>
-        <textarea id="vDesc" class="admin-textarea" placeholder="Description" required></textarea>
-        <select id="vCategory" class="admin-select">
-          <option value="Latest">Latest</option>
-          <option value="Popular">Popular</option>
-          <option value="Featured">Featured</option>
-        </select>
-        <input type="text" id="vThumb" class="admin-input" placeholder="Cover Photo Image URL (.jpg/.png)" required>
-        <input type="text" id="vUrl" class="admin-input" placeholder="Direct Video Link (.mp4)" required>
-        <button type="submit" id="submitBtn" class="primary" style="width:100%;margin-top:10px;">Upload Video</button>
-      </form>
-      <hr style="margin:20px 0;border-color:#444;">
-      <h3>Manage Videos</h3>
-      <div id="adminVideoList"></div>
-    </div>
-  </div>
-</div>
-
 <footer>
-  © <span id="year"></span> Video Hub
-  <button class="admin-btn-secret" id="openAdminBtn">⚙ Admin</button>
+  © <span id="year"></span> Video Hub[cite: 1]
 </footer>
 
 <script>
 "use strict";
-const ADMIN_PASS = "Rms34@3";
 
-// আপনার দেওয়া গুগল শিট Apps Script URL
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxcDdtHZVFV5lgXmumGPyzsRvEOwvWTpid8egky8q1as-s5f8too0hWB3gaIPJWpPvV/exec";
+// 👉 সরাসরি কোডের ভেতর ভিডিও লিস্ট (এখানে নতুন ভিডিও যোগ বা এডিট করতে পারবেন)
+const videosData = [
+  {
+    id: 1,
+    title: "ভাইরাল গোলাপি মেম এর নতুন ভাইরাল ভিডিও! 🤩🎬",
+    category: "Popular",
+    duration: "39s",
+    description: "Viral video description",
+    thumb: "https://i.postimg.cc/gkdnhXmq/Screenshot-20261019-211859-(1).jpg",
+    url: "https://www.dropbox.com/scl/fi/fb5ytgq00eb2d4lthuzf5/WhatsApp-Video-2026-10-20-at-1.15.43-PM-1.mp4?rlkey=2t6nmaqtec9em4kl6sjt2lwtz&st=g9ao4j5j&raw=1"
+  }
+  // নতুন ভিডিও যোগ করতে চাইলে নিচে কমা দিয়ে আরেকটি ব্র্যাকেট যুক্ত করুন:
+  /*
+  ,{
+    id: 2,
+    title: "আপনার দ্বিতীয় ভিডিওর টাইটেল",
+    category: "Latest",
+    duration: "39s",
+    description: "ডেসক্রিপশন এখানে দিন",
+    thumb: "ছবির_লিঙ্ক_এখানে",
+    url: "ভিডিওর_লিঙ্ক_raw=1_সহ"
+  }
+  */
+];
 
 const adLinks = [
   "https://www.profitableratecpmnetwork.com/r9tpq2mgt1?key=f80f32b10b8d7d996b40911857a6e971",
@@ -161,7 +141,6 @@ const adLinks = [
   "https://pl24149030.profitableratecpmnetwork.com/1c/a9/46/1ca946a99617087d265c4b4f20a49c5c.js"
 ];
 
-let videosCache = [];
 let activeCategory = "All";
 let currentVideoPlaying = null;
 let currentAdStep = 1;
@@ -176,25 +155,11 @@ const confirmAdBtn = document.getElementById("confirmAdBtn");
 const adStepText = document.getElementById("adStepText");
 const adClickLink = document.getElementById("adClickLink");
 
-async function fetchVideos() {
-  try {
-    const res = await fetch(GOOGLE_SCRIPT_URL);
-    const data = await res.json();
-    videosCache = data.videos || [];
-    render();
-    if(!adminControlSection.classList.contains("hidden")){
-      loadAdminList();
-    }
-  } catch (err) {
-    grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>Loading videos...</p>";
-  }
-}
-
 function render(){
   grid.replaceChildren();
   const query = search.value.trim().toLowerCase();
 
-  const filtered = videosCache.filter(v =>
+  const filtered = videosData.filter(v =>
     (activeCategory === "All" || v.category === activeCategory) &&
     v.title.toLowerCase().includes(query)
   );
@@ -260,6 +225,7 @@ function onAdClicked(){
 confirmAdBtn.addEventListener("click", () => {
   currentAdStep++;
   if(currentAdStep <= 5){
+    updateAdTestUI(); // fallback
     updateAdStepUI();
   } else {
     adVerificationArea.classList.add("hidden");
@@ -269,10 +235,10 @@ confirmAdBtn.addEventListener("click", () => {
   }
 });
 
-document.getElementById("closeWatchBtn").addEventListener("click", () => {
+function closeModal(){
   mainPlayer.pause();
   watchModal.classList.add("hidden");
-});
+}
 
 search.addEventListener("input", render);
 document.querySelectorAll("#categories button").forEach(button => {
@@ -284,113 +250,8 @@ document.querySelectorAll("#categories button").forEach(button => {
   });
 });
 
-const adminModal = document.getElementById("adminModal");
-const adminLoginSection = document.getElementById("adminLoginSection");
-const adminControlSection = document.getElementById("adminControlSection");
-
-document.getElementById("openAdminBtn").addEventListener("click", () => {
-  adminModal.classList.remove("hidden");
-});
-document.getElementById("closeAdminBtn").addEventListener("click", () => {
-  adminModal.classList.add("hidden");
-});
-
-document.getElementById("adminLoginBtn").addEventListener("click", () => {
-  const inputPass = document.getElementById("adminPassInput").value;
-  if(inputPass === ADMIN_PASS){
-    document.getElementById("loginErr").style.display = "none";
-    adminLoginSection.classList.add("hidden");
-    adminControlSection.classList.remove("hidden");
-    loadAdminList();
-  } else {
-    document.getElementById("loginErr").style.display = "block";
-  }
-});
-
-// CORS বাইপাস করার জন্য ফর্ম সাবমিশন আপডেট
-document.getElementById("uploadForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const btn = document.getElementById("submitBtn");
-  btn.disabled = true;
-  btn.textContent = "Uploading...";
-
-  const newVideo = {
-    id: Date.now(),
-    title: document.getElementById("vTitle").value,
-    description: document.getElementById("vDesc").value,
-    category: document.getElementById("vCategory").value,
-    thumb: document.getElementById("vThumb").value,
-    url: document.getElementById("vUrl").value,
-    duration: "39s"
-  };
-
-  try {
-    await fetch(GOOGLE_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {
-        'Content-Type': 'text/plain'
-      },
-      body: JSON.stringify({ action: "add", video: newVideo })
-    });
-
-    alert("Uploaded Successfully!");
-    document.getElementById("uploadForm").reset();
-    setTimeout(() => {
-      fetchVideos();
-    }, 1500);
-
-  } catch(err) {
-    alert("Upload Failed!");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Upload Video";
-  }
-});
-
-function loadAdminList(){
-  const list = document.getElementById("adminVideoList");
-  list.innerHTML = "";
-
-  if(videosCache.length === 0){
-    list.innerHTML = "<p>No videos available.</p>";
-    return;
-  }
-
-  videosCache.forEach(v => {
-    const item = document.createElement("div");
-    item.className = "video-item";
-    item.innerHTML = `
-      <div><strong>${v.title}</strong> (${v.category})</div>
-      <button onclick="deleteVideo('${v.id}')" class="danger">Delete</button>
-    `;
-    list.appendChild(item);
-  });
-}
-
-window.deleteVideo = async function(id){
-  if(confirm("Delete this video?")){
-    try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'text/plain'
-        },
-        body: JSON.stringify({ action: "delete", id: id })
-      });
-      alert("Deleted!");
-      setTimeout(() => {
-        fetchVideos();
-      }, 1500);
-    } catch(e) {
-      alert("Delete failed!");
-    }
-  }
-};
-
 document.getElementById("year").textContent = new Date().getFullYear();
-fetchVideos();
+render();
 </script>
 </body>
 </html>
