@@ -32,7 +32,11 @@ footer{padding:25px;text-align:center;color:#aaa;background:#080808;margin-top:3
 
 .watch-dialog{max-width:700px;width:100%;background:#1a1a1a;padding:20px;border-radius:8px;text-align:center}
 .ad-step-box{background:#252525;border:1px dashed #ffbd20;padding:15px;margin:15px 0;border-radius:6px}
+
 video{width:100%;max-height:60vh;background:#000;margin-top:10px;border-radius:6px}
+video::-internal-media-controls-download-button { display:none !important; }
+video::-webkit-media-controls-enclosure { overflow:hidden !important; }
+video::-webkit-media-controls-panel { width: calc(100% + 30px) !important; }
 
 .admin-btn-secret{position:absolute;right:10px;bottom:10px;background:none;border:none;color:#555;font-size:12px;cursor:pointer;padding:5px;}
 .admin-input, .admin-select, .admin-textarea{width:100%;padding:10px;margin:8px 0;background:#2b2b2b;color:#fff;border:1px solid #444;border-radius:5px}
@@ -87,7 +91,7 @@ video{width:100%;max-height:60vh;background:#000;margin-top:10px;border-radius:6
     </div>
 
     <div id="playerContainer" class="hidden">
-      <video id="mainPlayer" controls playsinline></video>
+      <video id="mainPlayer" controls controlsList="nodownload" oncontextmenu="return false;" playsinline></video>
       <p id="watchDesc" style="color:#aaa;font-size:14px;margin-top:10px;"></p>
     </div>
   </div>
@@ -129,13 +133,17 @@ video{width:100%;max-height:60vh;background:#000;margin-top:10px;border-radius:6
 </div>
 
 <footer>
-  © <span id="year"></span> Video Hub
+  © <span id="year"></span> Video Hub[cite: 1]
   <button class="admin-btn-secret" id="openAdminBtn">⚙ Admin</button>
 </footer>
 
 <script>
 "use strict";
 const ADMIN_PASS = "Rms34@3";
+
+// JSONBin.io Config
+const BIN_ID = "6ad88300ac6210605a45152d";[cite: 10]
+const API_KEY = "$2a$10$LG7/hGsvZiTcVhTgchdt0TWXEIynqQmZPZ./NEZcbgt6lV5ox87C";[cite: 8]
 
 const adLinks = [
   "https://www.profitableratecpmnetwork.com/r9tpq2mgt1?key=f80f32b10b8d7d996b40911857a6e971",
@@ -145,13 +153,7 @@ const adLinks = [
   "https://pl24149030.profitableratecpmnetwork.com/1c/a9/46/1ca946a99617087d265c4b4f20a49c5c.js"
 ];
 
-if(!localStorage.getItem("hub_videos")){
-  const defaultVideos = [
-    {id: 1, title:"Sample 39s Short Video 1", category:"Featured", duration:"39s", description:"Sample video description.", thumb:"https://images.unsplash.com/photo-1536240478700-b869070f9279?w=500", url:"https://www.w3schools.com/html/mov_bbb.mp4"}
-  ];
-  localStorage.setItem("hub_videos", JSON.stringify(defaultVideos));
-}
-
+let videosCache = [];
 let activeCategory = "All";
 let currentVideoPlaying = null;
 let currentAdStep = 1;
@@ -166,12 +168,49 @@ const confirmAdBtn = document.getElementById("confirmAdBtn");
 const adStepText = document.getElementById("adStepText");
 const adClickLink = document.getElementById("adClickLink");
 
+// Fetch Videos from JSONBin.io Cloud Database
+async function fetchVideos() {
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+      headers: { 'X-Master-Key': API_KEY }
+    });
+    const data = await res.json();
+    videosCache = data.record.videos || [];
+    render();
+  } catch (err) {
+    grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>Failed to load videos from cloud.</p>";
+  }
+}
+
+// Save Videos to JSONBin.io Cloud Database
+async function saveVideosToCloud(newVideosArray) {
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': API_KEY
+      },
+      body: JSON.stringify({ videos: newVideosArray })
+    });
+    if(res.ok) {
+      videosCache = newVideosArray;
+      render();
+      loadAdminList();
+      alert("Cloud Database Updated Successfully!");
+    } else {
+      alert("Failed to save on cloud!");
+    }
+  } catch (e) {
+    alert("Network error while saving!");
+  }
+}
+
 function render(){
   grid.replaceChildren();
   const query = search.value.trim().toLowerCase();
-  const videos = JSON.parse(localStorage.getItem("hub_videos")) || [];
 
-  const filtered = videos.filter(v =>
+  const filtered = videosCache.filter(v =>
     (activeCategory === "All" || v.category === activeCategory) &&
     v.title.toLowerCase().includes(query)
   );
@@ -284,9 +323,8 @@ document.getElementById("adminLoginBtn").addEventListener("click", () => {
   }
 });
 
-document.getElementById("uploadForm").addEventListener("submit", (e) => {
+document.getElementById("uploadForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  let videos = JSON.parse(localStorage.getItem("hub_videos")) || [];
   
   const newVideo = {
     id: Date.now(),
@@ -298,20 +336,21 @@ document.getElementById("uploadForm").addEventListener("submit", (e) => {
     duration: "39s"
   };
 
-  videos.unshift(newVideo);
-  localStorage.setItem("hub_videos", JSON.stringify(videos));
-  alert("Video Uploaded Successfully!");
+  let updatedVideos = [newVideo, ...videosCache];
+  await saveVideosToCloud(updatedVideos);
   document.getElementById("uploadForm").reset();
-  loadAdminList();
-  render();
 });
 
 function loadAdminList(){
   const list = document.getElementById("adminVideoList");
   list.innerHTML = "";
-  let videos = JSON.parse(localStorage.getItem("hub_videos")) || [];
 
-  videos.forEach(v => {
+  if(videosCache.length === 0){
+    list.innerHTML = "<p>No videos available.</p>";
+    return;
+  }
+
+  videosCache.forEach(v => {
     const item = document.createElement("div");
     item.className = "video-item";
     item.innerHTML = `
@@ -322,18 +361,15 @@ function loadAdminList(){
   });
 }
 
-window.deleteVideo = function(id){
-  if(confirm("Delete this video?")){
-    let videos = JSON.parse(localStorage.getItem("hub_videos")) || [];
-    videos = videos.filter(v => v.id !== id);
-    localStorage.setItem("hub_videos", JSON.stringify(videos));
-    loadAdminList();
-    render();
+window.deleteVideo = async function(id){
+  if(confirm("Delete this video from cloud?")){
+    let updatedVideos = videosCache.filter(v => v.id !== id);
+    await saveVideosToCloud(updatedVideos);
   }
 };
 
 document.getElementById("year").textContent = new Date().getFullYear();
-render();
+fetchVideos();
 </script>
 </body>
 </html>
