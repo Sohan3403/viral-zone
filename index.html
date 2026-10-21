@@ -1,102 +1,391 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111111">
 <title>Video Hub</title>
 <style>
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: #111;
-  color: white;
-  font-family: Arial, sans-serif;
-}
-header {
-  background: #080808;
-  padding: 18px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-h1 { color: #ffbd20; font-size: 24px; margin: 0; }
-input {
-  background: #252525;
-  border: 1px solid #444;
-  color: white;
-  padding: 12px;
-  border-radius: 6px;
-}
-main { padding: 16px; }
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-.card { background: #202020; border-radius: 6px; overflow: hidden; }
-.cover {
-  background: linear-gradient(135deg, #343434, #171717);
-  aspect-ratio: 16 / 9;
-  display: grid;
-  place-items: center;
-  color: #ffbd20;
-  font-size: 24px;
-}
-.info { padding: 10px; }
-.info h3 { font-size: 15px; margin: 0 0 8px; }
-.info p { font-size: 12px; color: #aaa; margin: 0; }
-@media(max-width:650px) {
-  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media(max-width:400px) {
-  .grid { grid-template-columns: 1fr; }
-}
+*{box-sizing:border-box}
+body{margin:0;background:#111;color:#f5f5f5;font-family:Arial,sans-serif}
+header{background:#080808;padding:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:sticky;top:0;z-index:2}
+.logo{font-size:23px;font-weight:bold;color:#ffc229;text-decoration:none}
+#search{flex:1;min-width:180px;padding:12px;background:#222;color:white;border:1px solid #444;border-radius:7px}
+nav{display:flex;gap:8px;padding:12px 16px;background:#191919;overflow-x:auto}
+button{cursor:pointer;border:0;border-radius:5px;padding:10px 14px;background:#292929;color:white}
+button.active,button:hover,.primary{background:#ffbd20;color:#111;font-weight:bold}
+main{padding:16px;max-width:1400px;margin:auto}
+.ad-slot{min-height:90px;display:flex;align-items:center;justify-content:center;margin:12px auto 22px;background:#171717;border:1px dashed #383838;color:#777;text-align:center;padding:8px}
+h2{font-size:20px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.card{background:#1d1d1d;overflow:hidden;border-radius:6px;cursor:pointer}
+.thumb{width:100%;aspect-ratio:16/9;background-size:cover;background-position:center;display:grid;place-items:center;color:#ffc229;font-size:32px;background-color:#222}
+.card button{padding:0;background:none;color:white;text-align:left;width:100%;border:none}
+.info{padding:10px}
+.info h3{font-size:15px;margin:0 0 8px;color:#fff}
+.info p{font-size:12px;color:#aaa;margin:0}
+footer{padding:25px;text-align:center;color:#aaa;background:#080808;margin-top:30px;position:relative}
+
+/* Modals & Overlays */
+.overlay{position:fixed;inset:0;background:#000e;z-index:5;display:flex;align-items:center;justify-content:center;padding:20px}
+.dialog{max-width:480px;width:100%;background:#202020;padding:24px;border-radius:10px;text-align:center}
+.dialog p{line-height:1.5;color:#ccc}
+.hidden{display:none !important}
+
+/* Video Watch & Ad Modal */
+.watch-dialog{max-width:700px;width:100%;background:#1a1a1a;padding:20px;border-radius:8px;text-align:center}
+.ad-step-box{background:#252525;border:1px dashed #ffbd20;padding:15px;margin:15px 0;border-radius:6px}
+video{width:100%;max-height:60vh;background:#000;margin-top:10px;border-radius:6px}
+
+/* Admin Styling */
+.admin-btn-secret{position:absolute;right:10px;bottom:10px;background:none;border:none;color:#333;font-size:11px;cursor:pointer}
+.admin-input, .admin-select, .admin-textarea{width:100%;padding:10px;margin:8px 0;background:#2b2b2b;color:#fff;border:1px solid #444;border-radius:5px}
+.danger{background:#ff4d4d;color:white}
+.video-item{background:#2b2b2b;padding:10px;margin:8px 0;border-radius:5px;display:flex;justify-content:space-between;align-items:center}
+
+@media(max-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}header{gap:10px}}
+@media(max-width:420px){.grid{grid-template-columns:1fr}main{padding:10px}}
 </style>
 </head>
 <body>
+
+<!-- Age Verification Modal -->
+<div id="ageGate" class="overlay">
+ <div class="dialog">
+  <h2>Age Verification</h2>
+  <p>This website is intended only for adults aged 18 or older. Continue only if you are legally permitted to view this content.</p>
+  <button class="primary" id="enterBtn">I am 18 or older</button>
+  <button id="leaveBtn">Exit</button>
+ </div>
+</div>
+
+<!-- Header -->
 <header>
-  <h1>▶ Video Hub</h1>
-  <input id="search" placeholder="Search videos..." aria-label="Search videos">
+ <a class="logo" href="#">▶ Video Hub</a>
+ <input id="search" placeholder="Search videos..." aria-label="Search videos">
 </header>
+
+<!-- Categories -->
+<nav id="categories">
+ <button class="active" data-category="All">All Videos</button>
+ <button data-category="Latest">Latest</button>
+ <button data-category="Popular">Popular</button>
+ <button data-category="Featured">Featured</button>
+</nav>
+
+<!-- Main Body -->
 <main>
-  <h2>Latest Videos</h2>
-  <div class="grid" id="grid"></div>
+ <!-- Header Ad Space -->
+ <div class="ad-slot" aria-label="Advertisement">
+   <script>
+     atOptions = {
+       'key' : '61b6cf64ff09c351802afc2bf7de1189',
+       'format' : 'iframe',
+       'height' : 90,
+       'width' : 728,
+       'params' : {}
+     };
+   </script>
+   <script src="https://www.highrevenueformat.com/61b6cf64ff09c351802afc2bf7de1189/invoke.js"></script>
+ </div>
+
+ <h2 id="heading">Latest Videos</h2>
+ 
+ <!-- Video Cards Grid -->
+ <div class="grid" id="grid"></div>
+
+ <!-- Footer Ad Space -->
+ <div class="ad-slot" aria-label="Advertisement">
+   <script src="https://pl24149030.profitableratecpmnetwork.com/1c/a9/46/1ca946a99617087d265c4b4f20a49c5c.js"></script>
+ </div>
 </main>
+
+<!-- Video Watch & 5 Ads Unlock Modal -->
+<div id="watchModal" class="overlay hidden">
+  <div class="watch-dialog">
+    <button id="closeWatchBtn" style="float:right;" class="danger">✕ Close</button>
+    <h3 id="watchTitle">Video Title</h3>
+    
+    <!-- Ad Verification System -->
+    <div id="adVerificationArea">
+      <p style="color:#ffbd20;font-weight:bold;">Watch 5 Ads to unlock full 39s video</p>
+      <div class="ad-step-box">
+        <p id="adStepText">Step 1 of 5: Click the link below to view sponsor ad</p>
+        <a id="adClickLink" href="https://www.profitableratecpmnetwork.com/r9tpq2mgt1?key=f80f32b10b8d7d996b40911857a6e971" target="_blank" onclick="onAdClicked()">
+          <button style="background:#00bcd4;color:#fff;padding:12px 18px;font-weight:bold;"> Click Here to Open Ad Link </button>
+        </a>
+      </div>
+      <button id="confirmAdBtn" disabled style="width:100%;margin-top:10px;">Complete Step Above First</button>
+    </div>
+
+    <!-- Main Video Player (Hidden initially) -->
+    <div id="playerContainer" class="hidden">
+      <video id="mainPlayer" controls playsinline></video>
+      <p id="watchDesc" style="color:#aaa;font-size:14px;margin-top:10px;"></p>
+    </div>
+  </div>
+</div>
+
+<!-- Secret Admin Panel Modal -->
+<div id="adminModal" class="overlay hidden">
+  <div class="dialog" style="max-width:550px;text-align:left;">
+    <button id="closeAdminBtn" style="float:right;" class="danger">✕</button>
+    
+    <!-- Login Screen -->
+    <div id="adminLoginSection">
+      <h2>Admin Login</h2>
+      <p style="font-size:13px;color:#aaa;">Enter management password:</p>
+      <input type="password" id="adminPassInput" class="admin-input" placeholder="Password">
+      <button id="adminLoginBtn" class="primary" style="width:100%;margin-top:10px;">Login</button>
+      <p id="loginErr" style="color:#ff4d4d;display:none;margin-top:8px;">Wrong Password!</p>
+    </div>
+
+    <!-- Admin Panel Screen -->
+    <div id="adminControlSection" class="hidden">
+      <h2>Admin Dashboard</h2>
+      <h3>Upload Video (39 Second Max)</h3>
+      <form id="uploadForm">
+        <input type="text" id="vTitle" class="admin-input" placeholder="Video Title" required>
+        <textarea id="vDesc" class="admin-textarea" placeholder="Description" required></textarea>
+        <select id="vCategory" class="admin-select">
+          <option value="Latest">Latest</option>
+          <option value="Popular">Popular</option>
+          <option value="Featured">Featured</option>
+        </select>
+        <input type="text" id="vThumb" class="admin-input" placeholder="Cover Photo Image URL" required>
+        <input type="text" id="vUrl" class="admin-input" placeholder="Direct Video Link (.mp4)" required>
+        <button type="submit" class="primary" style="width:100%;margin-top:10px;">Upload Video</button>
+      </form>
+
+      <hr style="margin:20px 0;border-color:#444;">
+      <h3>Manage Videos</h3>
+      <div id="adminVideoList"></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  © <span id="year"></span> Video Hub
+  <!-- Secret Admin Entrance -->
+  <button class="admin-btn-secret" id="openAdminBtn">Admin</button>
+</footer>
+
 <script>
-const samples = [
-  ["Welcome to Video Hub", "Featured"],
-  ["Sample Video 2", "Latest"],
-  ["Sample Video 3", "Popular"],
-  ["Sample Video 4", "Featured"],
-  ["Sample Video 5", "Latest"],
-  ["Sample Video 6", "Popular"]
-];
-const grid = document.getElementById("grid");
-function showVideos(query = "") {
-  grid.replaceChildren();
-  samples.filter(v => v[0].toLowerCase().includes(query.toLowerCase()))
-    .forEach(v => {
-      const card = document.createElement("article");
-      card.className = "card";
-      const cover = document.createElement("div");
-      cover.className = "cover";
-      cover.textContent = "▶";
-      const info = document.createElement("div");
-      info.className = "info";
-      const title = document.createElement("h3");
-      title.textContent = v[0];
-      const category = document.createElement("p");
-      category.textContent = v[1];
-      info.append(title, category);
-      card.append(cover, info);
-      grid.append(card);
-    });
+"use strict";
+
+// Admin password
+const ADMIN_PASS = "Rms34@3";
+
+// Initial Demo Data
+if(!localStorage.getItem("hub_videos")){
+  const defaultVideos = [
+    {id: 1, title:"Sample 39s Short Video 1", category:"Featured", duration:"39s", description:"Sample video description.", thumb:"https://images.unsplash.com/photo-1536240478700-b869070f9279?w=500", url:"https://www.w3schools.com/html/mov_bbb.mp4"},
+    {id: 2, title:"Sample 39s Short Video 2", category:"Latest", duration:"39s", description:"Sample video description.", thumb:"https://images.unsplash.com/photo-1518173946687-a4c8a383392e?w=500", url:"https://www.w3schools.com/html/mov_bbb.mp4"}
+  ];
+  localStorage.setItem("hub_videos", JSON.stringify(defaultVideos));
 }
-document.getElementById("search").addEventListener("input", e => showVideos(e.target.value));
-showVideos();
+
+let activeCategory = "All";
+let currentVideoPlaying = null;
+let currentAdStep = 1;
+
+const grid = document.getElementById("grid");
+const search = document.getElementById("search");
+const watchModal = document.getElementById("watchModal");
+const adVerificationArea = document.getElementById("adVerificationArea");
+const playerContainer = document.getElementById("playerContainer");
+const mainPlayer = document.getElementById("mainPlayer");
+const confirmAdBtn = document.getElementById("confirmAdBtn");
+const adStepText = document.getElementById("adStepText");
+
+// Render Videos on Page
+function render(){
+  grid.replaceChildren();
+  const query = search.value.trim().toLowerCase();
+  const videos = JSON.parse(localStorage.getItem("hub_videos")) || [];
+
+  const filtered = videos.filter(v =>
+    (activeCategory === "All" || v.category === activeCategory) &&
+    v.title.toLowerCase().includes(query)
+  );
+
+  filtered.forEach(v => {
+    const card = document.createElement("article");
+    card.className = "card";
+
+    const playBtn = document.createElement("button");
+    playBtn.type = "button";
+    
+    const thumb = document.createElement("div");
+    thumb.className = "thumb";
+    thumb.style.backgroundImage = `url('${v.thumb}')`;
+    thumb.textContent = "▶";
+
+    const info = document.createElement("div");
+    info.className = "info";
+
+    const title = document.createElement("h3");
+    title.textContent = v.title;
+
+    const category = document.createElement("p");
+    category.textContent = v.category + " · " + (v.duration || "39s");
+
+    info.append(title, category);
+    playBtn.append(thumb, info);
+    card.append(playBtn);
+    grid.append(card);
+
+    playBtn.addEventListener("click", () => startWatchProcess(v));
+  });
+
+  if(filtered.length === 0){
+    grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>No videos found.</p>";
+  }
+}
+
+// Open Watch Modal & Reset Ads Count
+function startWatchProcess(video){
+  currentVideoPlaying = video;
+  currentAdStep = 1;
+  document.getElementById("watchTitle").textContent = video.title;
+  document.getElementById("watchDesc").textContent = video.description;
+  
+  // Show Ad system, hide Player
+  adVerificationArea.classList.remove("hidden");
+  playerContainer.classList.add("hidden");
+  mainPlayer.pause();
+  mainPlayer.removeAttribute("src");
+
+  updateAdStepUI();
+  watchModal.classList.remove("hidden");
+}
+
+function onAdClicked(){
+  confirmAdBtn.disabled = false;
+  confirmAdBtn.textContent = `Confirm Step ${currentAdStep} Completed`;
+}
+
+function updateAdStepUI(){
+  adStepText.textContent = `Step ${currentAdStep} of 5: Click the ad link below to verify`;
+  confirmAdBtn.disabled = true;
+  confirmAdBtn.textContent = "Click Ad Link First";
+}
+
+confirmAdBtn.addEventListener("click", () => {
+  currentAdStep++;
+  if(currentAdStep <= 5){
+    updateAdStepUI();
+  } else {
+    // Unlock Video Player
+    adVerificationArea.classList.add("hidden");
+    playerContainer.classList.remove("hidden");
+    mainPlayer.src = currentVideoPlaying.url;
+    mainPlayer.play();
+  }
+});
+
+document.getElementById("closeWatchBtn").addEventListener("click", () => {
+  mainPlayer.pause();
+  watchModal.classList.add("hidden");
+});
+
+// Category Filter & Search
+search.addEventListener("input", render);
+document.querySelectorAll("#categories button").forEach(button => {
+  button.addEventListener("click", () => {
+    activeCategory = button.dataset.category;
+    document.querySelectorAll("#categories button").forEach(b => b.classList.toggle("active", b === button));
+    document.getElementById("heading").textContent = activeCategory === "All" ? "All Videos" : activeCategory + " Videos";
+    render();
+  });
+});
+
+// Age Gate Handlers
+document.getElementById("enterBtn").addEventListener("click", () => {
+  document.getElementById("ageGate").style.display = "none";
+});
+document.getElementById("leaveBtn").addEventListener("click", () => {
+  document.body.innerHTML = "<main style='text-align:center;padding:50px;'><h2>Access Denied</h2></main>";
+});
+
+// ADMIN PANEL LOGIC
+const adminModal = document.getElementById("adminModal");
+const adminLoginSection = document.getElementById("adminLoginSection");
+const adminControlSection = document.getElementById("adminControlSection");
+
+document.getElementById("openAdminBtn").addEventListener("click", () => {
+  adminModal.classList.remove("hidden");
+});
+document.getElementById("closeAdminBtn").addEventListener("click", () => {
+  adminModal.classList.add("hidden");
+});
+
+document.getElementById("adminLoginBtn").addEventListener("click", () => {
+  const inputPass = document.getElementById("adminPassInput").value;
+  if(inputPass === ADMIN_PASS){
+    document.getElementById("loginErr").style.display = "none";
+    adminLoginSection.classList.add("hidden");
+    adminControlSection.classList.remove("hidden");
+    loadAdminList();
+  } else {
+    document.getElementById("loginErr").style.display = "block";
+  }
+});
+
+// Handle Upload inside Admin
+document.getElementById("uploadForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  let videos = JSON.parse(localStorage.getItem("hub_videos")) || [];
+  
+  const newVideo = {
+    id: Date.now(),
+    title: document.getElementById("vTitle").value,
+    description: document.getElementById("vDesc").value,
+    category: document.getElementById("vCategory").value,
+    thumb: document.getElementById("vThumb").value,
+    url: document.getElementById("vUrl").value,
+    duration: "39s"
+  };
+
+  videos.unshift(newVideo);
+  localStorage.setItem("hub_videos", JSON.stringify(videos));
+  alert("39s Video Uploaded Successfully!");
+  document.getElementById("uploadForm").reset();
+  loadAdminList();
+  render();
+});
+
+function loadAdminList(){
+  const list = document.getElementById("adminVideoList");
+  list.innerHTML = "";
+  let videos = JSON.parse(localStorage.getItem("hub_videos")) || [];
+
+  videos.forEach(v => {
+    const item = document.createElement("div");
+    item.className = "video-item";
+    item.innerHTML = `
+      <div><strong>${v.title}</strong> (${v.category})</div>
+      <button onclick="deleteVideo(${v.id})" class="danger">Delete</button>
+    `;
+    list.appendChild(item);
+  });
+}
+
+window.deleteVideo = function(id){
+  if(confirm("Delete this video?")){
+    let videos = JSON.parse(localStorage.getItem("hub_videos")) || [];
+    videos = videos.filter(v => v.id !== id);
+    localStorage.setItem("hub_videos", JSON.stringify(videos));
+    loadAdminList();
+    render();
+  }
+};
+
+document.getElementById("year").textContent = new Date().getFullYear();
+render();
 </script>
+
+<!-- Popunder Ad Link Script -->
+<script src="https://pl24148820.profitableratecpmnetwork.com/2d/7d/6e/2d7d6ef589dddc38c42ec94f414d5429.js"></script>
 </body>
 </html>
