@@ -26,18 +26,15 @@ h2{font-size:20px}
 .info p{font-size:12px;color:#aaa;margin:0}
 footer{padding:25px;text-align:center;color:#aaa;background:#080808;margin-top:30px;position:relative}
 
-/* Modals & Overlays */
 .overlay{position:fixed;inset:0;background:#000e;z-index:5;display:flex;align-items:center;justify-content:center;padding:20px}
 .dialog{max-width:480px;width:100%;background:#202020;padding:24px;border-radius:10px;text-align:center}
 .dialog p{line-height:1.5;color:#ccc}
 .hidden{display:none !important}
 
-/* Video Watch & Ad Modal */
 .watch-dialog{max-width:700px;width:100%;background:#1a1a1a;padding:20px;border-radius:8px;text-align:center}
 .ad-step-box{background:#252525;border:1px dashed #ffbd20;padding:15px;margin:15px 0;border-radius:6px}
 video{width:100%;max-height:60vh;background:#000;margin-top:10px;border-radius:6px}
 
-/* Admin Styling */
 .admin-btn-secret{position:absolute;right:10px;bottom:10px;background:none;border:none;color:#333;font-size:11px;cursor:pointer}
 .admin-input, .admin-select, .admin-textarea{width:100%;padding:10px;margin:8px 0;background:#2b2b2b;color:#fff;border:1px solid #444;border-radius:5px}
 .danger{background:#ff4d4d;color:white}
@@ -49,7 +46,6 @@ video{width:100%;max-height:60vh;background:#000;margin-top:10px;border-radius:6
 </head>
 <body>
 
-<!-- Age Verification Modal -->
 <div id="ageGate" class="overlay">
  <div class="dialog">
   <h2>Age Verification</h2>
@@ -59,13 +55,11 @@ video{width:100%;max-height:60vh;background:#000;margin-top:10px;border-radius:6
  </div>
 </div>
 
-<!-- Header -->
 <header>
  <a class="logo" href="#">▶ Video Hub</a>
  <input id="search" placeholder="Search videos..." aria-label="Search videos">
 </header>
 
-<!-- Categories -->
 <nav id="categories">
  <button class="active" data-category="All">All Videos</button>
  <button data-category="Latest">Latest</button>
@@ -73,52 +67,35 @@ video{width:100%;max-height:60vh;background:#000;margin-top:10px;border-radius:6
  <button data-category="Featured">Featured</button>
 </nav>
 
-<!-- Main Body -->
 <main>
- <!-- Header Ad Space -->
  <div class="ad-slot" aria-label="Advertisement">
    <script>
-     atOptions = {
-       'key' : '61b6cf64ff09c351802afc2bf7de1189',
-       'format' : 'iframe',
-       'height' : 90,
-       'width' : 728,
-       'params' : {}
-     };
+     atOptions = { 'key' : '61b6cf64ff09c351802afc2bf7de1189', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
    </script>
    <script src="https://www.highrevenueformat.com/61b6cf64ff09c351802afc2bf7de1189/invoke.js"></script>
  </div>
 
  <h2 id="heading">Latest Videos</h2>
- 
- <!-- Video Cards Grid -->
  <div class="grid" id="grid"></div>
-
- <!-- Footer Ad Space -->
- <div class="ad-slot" aria-label="Advertisement">
-   <script src="https://pl24149030.profitableratecpmnetwork.com/1c/a9/46/1ca946a99617087d265c4b4f20a49c5c.js"></script>
- </div>
 </main>
 
-<!-- Video Watch & 5 Ads Unlock Modal -->
+<!-- Watch Modal & 5 Ads System -->
 <div id="watchModal" class="overlay hidden">
   <div class="watch-dialog">
     <button id="closeWatchBtn" style="float:right;" class="danger">✕ Close</button>
     <h3 id="watchTitle">Video Title</h3>
     
-    <!-- Ad Verification System -->
     <div id="adVerificationArea">
-      <p style="color:#ffbd20;font-weight:bold;">Watch 5 Ads to unlock full 39s video</p>
+      <p style="color:#ffbd20;font-weight:bold;">Complete 5 Ad steps to unlock video playback</p>
       <div class="ad-step-box">
-        <p id="adStepText">Step 1 of 5: Click the link below to view sponsor ad</p>
-        <a id="adClickLink" href="https://www.profitableratecpmnetwork.com/r9tpq2mgt1?key=f80f32b10b8d7d996b40911857a6e971" target="_blank" onclick="onAdClicked()">
-          <button style="background:#00bcd4;color:#fff;padding:12px 18px;font-weight:bold;"> Click Here to Open Ad Link </button>
+        <p id="adStepText">Step 1 of 5</p>
+        <a id="adClickLink" href="#" target="_blank" onclick="onAdClicked()">
+          <button style="background:#00bcd4;color:#fff;padding:12px 18px;font-weight:bold;">Click Here to View Ad</button>
         </a>
       </div>
       <button id="confirmAdBtn" disabled style="width:100%;margin-top:10px;">Complete Step Above First</button>
     </div>
 
-    <!-- Main Video Player (Hidden initially) -->
     <div id="playerContainer" class="hidden">
       <video id="mainPlayer" controls playsinline></video>
       <p id="watchDesc" style="color:#aaa;font-size:14px;margin-top:10px;"></p>
@@ -126,24 +103,22 @@ video{width:100%;max-height:60vh;background:#000;margin-top:10px;border-radius:6
   </div>
 </div>
 
-<!-- Secret Admin Panel Modal -->
+<!-- Secret Admin Modal -->
 <div id="adminModal" class="overlay hidden">
   <div class="dialog" style="max-width:550px;text-align:left;">
     <button id="closeAdminBtn" style="float:right;" class="danger">✕</button>
     
-    <!-- Login Screen -->
     <div id="adminLoginSection">
       <h2>Admin Login</h2>
-      <p style="font-size:13px;color:#aaa;">Enter management password:</p>
+      <p style="font-size:13px;color:#aaa;">Enter password:</p>
       <input type="password" id="adminPassInput" class="admin-input" placeholder="Password">
       <button id="adminLoginBtn" class="primary" style="width:100%;margin-top:10px;">Login</button>
       <p id="loginErr" style="color:#ff4d4d;display:none;margin-top:8px;">Wrong Password!</p>
     </div>
 
-    <!-- Admin Panel Screen -->
     <div id="adminControlSection" class="hidden">
       <h2>Admin Dashboard</h2>
-      <h3>Upload Video (39 Second Max)</h3>
+      <h3>Upload Video (39s Max)</h3>
       <form id="uploadForm">
         <input type="text" id="vTitle" class="admin-input" placeholder="Video Title" required>
         <textarea id="vDesc" class="admin-textarea" placeholder="Description" required></textarea>
@@ -152,11 +127,10 @@ video{width:100%;max-height:60vh;background:#000;margin-top:10px;border-radius:6
           <option value="Popular">Popular</option>
           <option value="Featured">Featured</option>
         </select>
-        <input type="text" id="vThumb" class="admin-input" placeholder="Cover Photo Image URL" required>
+        <input type="text" id="vThumb" class="admin-input" placeholder="Cover Photo Image URL (.jpg/.png)" required>
         <input type="text" id="vUrl" class="admin-input" placeholder="Direct Video Link (.mp4)" required>
         <button type="submit" class="primary" style="width:100%;margin-top:10px;">Upload Video</button>
       </form>
-
       <hr style="margin:20px 0;border-color:#444;">
       <h3>Manage Videos</h3>
       <div id="adminVideoList"></div>
@@ -165,22 +139,26 @@ video{width:100%;max-height:60vh;background:#000;margin-top:10px;border-radius:6
 </div>
 
 <footer>
-  © <span id="year"></span> Video Hub
-  <!-- Secret Admin Entrance -->
+  © <span id="year"></span> Video Hub[cite: 1]
   <button class="admin-btn-secret" id="openAdminBtn">Admin</button>
 </footer>
 
 <script>
 "use strict";
+const ADMIN_PASS = "Rms34@3";[cite: 1]
 
-// Admin password
-const ADMIN_PASS = "Rms34@3";
+// 5 Ad links (Apni ekhane apnar Adsterra direct links gulo bosie dite parben)
+const adLinks = [
+  "https://www.profitableratecpmnetwork.com/r9tpq2mgt1?key=f80f32b10b8d7d996b40911857a6e971",
+  "https://pl24149030.profitableratecpmnetwork.com/1c/a9/46/1ca946a99617087d265c4b4f20a49c5c.js",
+  "https://pl24148820.profitableratecpmnetwork.com/2d/7d/6e/2d7d6ef589dddc38c42ec94f414d5429.js",
+  "https://www.profitableratecpmnetwork.com/r9tpq2mgt1?key=f80f32b10b8d7d996b40911857a6e971",
+  "https://pl24149030.profitableratecpmnetwork.com/1c/a9/46/1ca946a99617087d265c4b4f20a49c5c.js"
+];
 
-// Initial Demo Data
 if(!localStorage.getItem("hub_videos")){
   const defaultVideos = [
-    {id: 1, title:"Sample 39s Short Video 1", category:"Featured", duration:"39s", description:"Sample video description.", thumb:"https://images.unsplash.com/photo-1536240478700-b869070f9279?w=500", url:"https://www.w3schools.com/html/mov_bbb.mp4"},
-    {id: 2, title:"Sample 39s Short Video 2", category:"Latest", duration:"39s", description:"Sample video description.", thumb:"https://images.unsplash.com/photo-1518173946687-a4c8a383392e?w=500", url:"https://www.w3schools.com/html/mov_bbb.mp4"}
+    {id: 1, title:"Sample 39s Short Video 1", category:"Featured", duration:"39s", description:"Sample video description.", thumb:"https://images.unsplash.com/photo-1536240478700-b869070f9279?w=500", url:"https://www.w3schools.com/html/mov_bbb.mp4"}
   ];
   localStorage.setItem("hub_videos", JSON.stringify(defaultVideos));
 }
@@ -197,8 +175,8 @@ const playerContainer = document.getElementById("playerContainer");
 const mainPlayer = document.getElementById("mainPlayer");
 const confirmAdBtn = document.getElementById("confirmAdBtn");
 const adStepText = document.getElementById("adStepText");
+const adClickLink = document.getElementById("adClickLink");
 
-// Render Videos on Page
 function render(){
   grid.replaceChildren();
   const query = search.value.trim().toLowerCase();
@@ -212,7 +190,6 @@ function render(){
   filtered.forEach(v => {
     const card = document.createElement("article");
     card.className = "card";
-
     const playBtn = document.createElement("button");
     playBtn.type = "button";
     
@@ -223,10 +200,8 @@ function render(){
 
     const info = document.createElement("div");
     info.className = "info";
-
     const title = document.createElement("h3");
     title.textContent = v.title;
-
     const category = document.createElement("p");
     category.textContent = v.category + " · " + (v.duration || "39s");
 
@@ -243,14 +218,12 @@ function render(){
   }
 }
 
-// Open Watch Modal & Reset Ads Count
 function startWatchProcess(video){
   currentVideoPlaying = video;
   currentAdStep = 1;
   document.getElementById("watchTitle").textContent = video.title;
   document.getElementById("watchDesc").textContent = video.description;
   
-  // Show Ad system, hide Player
   adVerificationArea.classList.remove("hidden");
   playerContainer.classList.add("hidden");
   mainPlayer.pause();
@@ -260,15 +233,16 @@ function startWatchProcess(video){
   watchModal.classList.remove("hidden");
 }
 
+function updateAdStepUI(){
+  adStepText.textContent = `Step ${currentAdStep} of 5: Click the link below to view ad`;
+  adClickLink.href = adLinks[currentAdStep - 1] || adLinks[0];
+  confirmAdBtn.disabled = true;
+  confirmAdBtn.textContent = "Click Ad Link First";
+}
+
 function onAdClicked(){
   confirmAdBtn.disabled = false;
   confirmAdBtn.textContent = `Confirm Step ${currentAdStep} Completed`;
-}
-
-function updateAdStepUI(){
-  adStepText.textContent = `Step ${currentAdStep} of 5: Click the ad link below to verify`;
-  confirmAdBtn.disabled = true;
-  confirmAdBtn.textContent = "Click Ad Link First";
 }
 
 confirmAdBtn.addEventListener("click", () => {
@@ -276,7 +250,6 @@ confirmAdBtn.addEventListener("click", () => {
   if(currentAdStep <= 5){
     updateAdStepUI();
   } else {
-    // Unlock Video Player
     adVerificationArea.classList.add("hidden");
     playerContainer.classList.remove("hidden");
     mainPlayer.src = currentVideoPlaying.url;
@@ -289,7 +262,6 @@ document.getElementById("closeWatchBtn").addEventListener("click", () => {
   watchModal.classList.add("hidden");
 });
 
-// Category Filter & Search
 search.addEventListener("input", render);
 document.querySelectorAll("#categories button").forEach(button => {
   button.addEventListener("click", () => {
@@ -300,7 +272,6 @@ document.querySelectorAll("#categories button").forEach(button => {
   });
 });
 
-// Age Gate Handlers
 document.getElementById("enterBtn").addEventListener("click", () => {
   document.getElementById("ageGate").style.display = "none";
 });
@@ -308,7 +279,6 @@ document.getElementById("leaveBtn").addEventListener("click", () => {
   document.body.innerHTML = "<main style='text-align:center;padding:50px;'><h2>Access Denied</h2></main>";
 });
 
-// ADMIN PANEL LOGIC
 const adminModal = document.getElementById("adminModal");
 const adminLoginSection = document.getElementById("adminLoginSection");
 const adminControlSection = document.getElementById("adminControlSection");
@@ -332,7 +302,6 @@ document.getElementById("adminLoginBtn").addEventListener("click", () => {
   }
 });
 
-// Handle Upload inside Admin
 document.getElementById("uploadForm").addEventListener("submit", (e) => {
   e.preventDefault();
   let videos = JSON.parse(localStorage.getItem("hub_videos")) || [];
@@ -349,7 +318,7 @@ document.getElementById("uploadForm").addEventListener("submit", (e) => {
 
   videos.unshift(newVideo);
   localStorage.setItem("hub_videos", JSON.stringify(videos));
-  alert("39s Video Uploaded Successfully!");
+  alert("Video Uploaded Successfully!");
   document.getElementById("uploadForm").reset();
   loadAdminList();
   render();
@@ -384,8 +353,5 @@ window.deleteVideo = function(id){
 document.getElementById("year").textContent = new Date().getFullYear();
 render();
 </script>
-
-<!-- Popunder Ad Link Script -->
-<script src="https://pl24148820.profitableratecpmnetwork.com/2d/7d/6e/2d7d6ef589dddc38c42ec94f414d5429.js"></script>
 </body>
 </html>
