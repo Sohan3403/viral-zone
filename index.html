@@ -69,7 +69,6 @@ video::-webkit-media-controls-panel { width: calc(100% + 30px) !important; }
    <script src="https://www.highrevenueformat.com/61b6cf64ff09c351802afc2bf7de1189/invoke.js"></script>
  </div>
 
- <!-- আপনার দেওয়া অতিরিক্ত অ্যাড স্ক্রিপ্ট ১ -->
  <div class="ad-slot">
    <script src="https://pl24149030.profitableratecpmnetwork.com/1c/a9/46/1ca946a99617087d265c4b4f20a49c5c.js"></script>
  </div>
@@ -87,7 +86,6 @@ video::-webkit-media-controls-panel { width: calc(100% + 30px) !important; }
     <div id="adVerificationArea">
       <p style="color:#ffbd20;font-weight:bold;">Complete 5 Ad steps to unlock video playback</p>
       
-      <!-- আপনার দেওয়া অতিরিক্ত অ্যাড স্ক্রিপ্ট ২ (ওয়াচ মডালের ভেতরে) -->
       <div style="margin:10px 0;">
         <script src="https://pl24148820.profitableratecpmnetwork.com/2d/7d/6e/2d7d6ef589dddc38c42ec94f414d5429.js"></script>
       </div>
@@ -144,7 +142,7 @@ video::-webkit-media-controls-panel { width: calc(100% + 30px) !important; }
 </div>
 
 <footer>
-  © <span id="year"></span> Video Hub[cite: 1]
+  © <span id="year"></span> Video Hub
   <button class="admin-btn-secret" id="openAdminBtn">⚙ Admin</button>
 </footer>
 
@@ -152,7 +150,7 @@ video::-webkit-media-controls-panel { width: calc(100% + 30px) !important; }
 "use strict";
 const ADMIN_PASS = "Rms34@3";
 
-// আপনার দেওয়া গুগল শিট Apps Script URL[cite: 11]
+// আপনার দেওয়া গুগল শিট Apps Script URL
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxcDdtHZVFV5lgXmumGPyzsRvEOwvWTpid8egky8q1as-s5f8too0hWB3gaIPJWpPvV/exec";
 
 const adLinks = [
@@ -184,6 +182,9 @@ async function fetchVideos() {
     const data = await res.json();
     videosCache = data.videos || [];
     render();
+    if(!adminControlSection.classList.contains("hidden")){
+      loadAdminList();
+    }
   } catch (err) {
     grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>Loading videos...</p>";
   }
@@ -306,6 +307,7 @@ document.getElementById("adminLoginBtn").addEventListener("click", () => {
   }
 });
 
+// CORS বাইপাস করার জন্য ফর্ম সাবমিশন আপডেট
 document.getElementById("uploadForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const btn = document.getElementById("submitBtn");
@@ -325,12 +327,19 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
   try {
     await fetch(GOOGLE_SCRIPT_URL, {
       method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'text/plain'
+      },
       body: JSON.stringify({ action: "add", video: newVideo })
     });
+
     alert("Uploaded Successfully!");
     document.getElementById("uploadForm").reset();
-    fetchVideos();
-    loadAdminList();
+    setTimeout(() => {
+      fetchVideos();
+    }, 1500);
+
   } catch(err) {
     alert("Upload Failed!");
   } finally {
@@ -364,11 +373,16 @@ window.deleteVideo = async function(id){
     try {
       await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'text/plain'
+        },
         body: JSON.stringify({ action: "delete", id: id })
       });
       alert("Deleted!");
-      fetchVideos();
-      loadAdminList();
+      setTimeout(() => {
+        fetchVideos();
+      }, 1500);
     } catch(e) {
       alert("Delete failed!");
     }
