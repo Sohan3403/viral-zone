@@ -1,32 +1,154 @@
-<script>
-    // তোমার দেওয়া ডিরেক্ট অ্যাড লিংকগুলো
-    const adLinks = [
-        "https://www.profitableratecpmnetwork.com/q301y256m?key=9ad3a41fff7936759bcd90a0384516d6",
-        "https://www.profitableratecpmnetwork.com/cgmc8cxuq?key=57cd0652088b50ff88f910152f0dc6ac",
-        "https://www.profitableratecpmnetwork.com/g5iq4dhfw?key=a6662763b2ab88f1de870adea23fb4ef",
-        "https://www.profitableratecpmnetwork.com/acirc3cd?key=bc8f2b3bf08bc12fb14d1a3d7b4255bb"
-    ];
-
-    const gallery = document.getElementById("gallery");
-
-    // ১০০ টা ইমেজের জন্য লুপ (১০০ এর জায়গায় ১০,০০০ দিলে ১০,০০০ টা তৈরি হবে)
-    for(let i = 1; i <= 100; i++) {
-        let card = document.createElement("div");
-        card.className = "card";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Viral Video Zone</title>
+    <style>
+        /* ওয়েবসাইটের মূল ডিজাইন */
+        body {
+            background: linear-gradient(135deg, #141e30, #243b55);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
         
-        let img = document.createElement("img");
-        
-        // এখানে তোমার ছবিগুলোর নাম কল করা হয়েছে (যেমন: image-1.jpg, image-2.jpg)
-        img.src = "image-" + i + ".jpg"; 
-        img.style.cursor = "pointer"; // মাউস নিলে হাতের আইকন দেখাবে যাতে মানুষ ক্লিক করে
+        /* বড় এবং আকর্ষণীয় টাইটেল */
+        .main-title {
+            font-size: 3.5rem;
+            margin-top: 50px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: #ff0055;
+            text-shadow: 0 0 10px #ff0055, 0 0 20px #ff0055, 0 0 40px #ff0055;
+        }
 
-        // ছবিতে ক্লিক করলেই তোমার অ্যাডগুলো ওপেন হবে
-        img.addEventListener('click', () => {
-            let randomAd = adLinks[Math.floor(Math.random() * adLinks.length)];
-            window.open(randomAd, '_blank');
+        .subtitle {
+            font-size: 1.2rem;
+            color: #cccccc;
+            margin-bottom: 50px;
+        }
+
+        /* গ্যালারি গ্রিড */
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ইমেজের কার্ড ডিজাইন */
+        .card {
+            position: relative;
+            width: 350px;
+            height: 220px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: #000;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(255, 0, 85, 0.4);
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover img {
+            opacity: 1;
+        }
+
+        /* ফেক প্লে বাটন ডিজাইন */
+        .play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 0, 85, 0.85);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.6);
+        }
+
+        .play-btn::after {
+            content: '';
+            display: block;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            border-left: 20px solid white;
+            margin-left: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- হেডিং অংশ -->
+    <h1 class="main-title">New Viral Video Zone</h1>
+    <p class="subtitle">Click on any video below to watch</p>
+
+    <!-- যেখানে ছবিগুলো শো করবে -->
+    <div class="gallery" id="gallery">
+        <!-- জাভাস্ক্রিপ্ট দিয়ে এখানে ছবি বসবে -->
+    </div>
+
+    <script>
+        // তোমার দেওয়া ডিরেক্ট অ্যাড লিংকগুলো
+        const adLinks = [
+            "https://www.profitableratecpmnetwork.com/q301y256m?key=9ad3a41fff7936759bcd90a0384516d6",
+            "https://www.profitableratecpmnetwork.com/cgmc8cxuq?key=57cd0652088b50ff88f910152f0dc6ac",
+            "https://www.profitableratecpmnetwork.com/g5iq4dhfw?key=a6662763b2ab88f1de870adea23fb4ef",
+            "https://www.profitableratecpmnetwork.com/acirc3cd?key=bc8f2b3bf08bc12fb14d1a3d7b4255bb"
+        ];
+
+        const gallery = document.getElementById("gallery");
+
+        // স্যাম্পল হিসেবে আপাতত ২টা অনলাইন ছবি দিলাম যাতে ওয়েবসাইট সাদা না দেখায়
+        // পরে এখানে তোমার নিজের ছবির লিংক বসাতে পারবে
+        const images = [
+            "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600&q=80",
+            "https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?w=600&q=80"
+        ];
+
+        // ছবিগুলো লুপ করে ওয়েবসাইটে বসানো হচ্ছে
+        images.forEach((imgSrc) => {
+            let card = document.createElement("div");
+            card.className = "card";
+            
+            let img = document.createElement("img");
+            img.src = imgSrc;
+            
+            let playBtn = document.createElement("div");
+            playBtn.className = "play-btn"; // প্লে বাটন অ্যাড করা হলো
+
+            // কেউ ক্লিক করলে অ্যাড ওপেন হবে
+            card.addEventListener('click', () => {
+                let randomAd = adLinks[Math.floor(Math.random() * adLinks.length)];
+                window.open(randomAd, '_blank');
+            });
+
+            card.appendChild(img);
+            card.appendChild(playBtn);
+            gallery.appendChild(card);
         });
-
-        card.appendChild(img);
-        gallery.appendChild(card);
-    }
-</script>
+    </script>
+</body>
+</html>
