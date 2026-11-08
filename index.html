@@ -1,257 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#111111">
-<title>Video Hub</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:#111;color:#f5f5f5;font-family:Arial,sans-serif}
-header{background:#080808;padding:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:sticky;top:0;z-index:2}
-.logo{font-size:23px;font-weight:bold;color:#ffc229;text-decoration:none}
-#search{flex:1;min-width:180px;padding:12px;background:#222;color:white;border:1px solid #444;border-radius:7px}
-nav{display:flex;gap:8px;padding:12px 16px;background:#191919;overflow-x:auto}
-button{cursor:pointer;border:0;border-radius:5px;padding:10px 14px;background:#292929;color:white}
-button.active,button:hover,.primary{background:#ffbd20;color:#111;font-weight:bold}
-main{padding:16px;max-width:1400px;margin:auto}
-.ad-slot{min-height:90px;display:flex;align-items:center;justify-content:center;margin:12px auto 22px;background:#171717;border:1px dashed #383838;color:#777;text-align:center;padding:8px}
-h2{font-size:20px}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.card{background:#1d1d1d;overflow:hidden;border-radius:6px;cursor:pointer}
-.thumb{width:100%;aspect-ratio:16/9;background-size:cover;background-position:center;display:grid;place-items:center;color:#ffc229;font-size:32px;background-color:#222}
-.card button{padding:0;background:none;color:white;text-align:left;width:100%;border:none}
-.info{padding:10px}
-.info h3{font-size:15px;margin:0 0 8px;color:#fff}
-.info p{font-size:12px;color:#aaa;margin:0}
-footer{padding:25px;text-align:center;color:#aaa;background:#080808;margin-top:30px;position:relative}
-
-.overlay{position:fixed;inset:0;background:#000e;z-index:5;display:flex;align-items:center;justify-content:center;padding:20px}
-.dialog{max-width:480px;width:100%;background:#202020;padding:24px;border-radius:10px;text-align:center}
-.hidden{display:none !important}
-
-.watch-dialog{max-width:700px;width:100%;background:#1a1a1a;padding:20px;border-radius:8px;text-align:center}
-.ad-step-box{background:#252525;border:1px dashed #ffbd20;padding:15px;margin:15px 0;border-radius:6px}
-
-video{width:100%;max-height:60vh;background:#000;margin-top:10px;border-radius:6px}
-video::-internal-media-controls-download-button { display:none !important; }
-video::-webkit-media-controls-enclosure { overflow:hidden !important; }
-video::-webkit-media-controls-panel { width: calc(100% + 30px) !important; }
-
-@media(max-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}header{gap:10px}}
-@media(max-width:420px){.grid{grid-template-columns:1fr}main{padding:10px}}
-</style>
-</head>
-<body>
-
-<header>
- <a class="logo" href="#">▶ Video Hub</a>
- <input id="search" placeholder="Search videos..." aria-label="Search videos">
-</header>
-
-<nav id="categories">
- <button class="active" data-category="All">All Videos</button>
- <button data-category="Latest">Latest</button>
- <button data-category="Popular">Popular</button>
- <button data-category="Featured">Featured</button>
-</nav>
-
-<main>
- <div class="ad-slot" aria-label="Advertisement">
-   <script>
-     atOptions = { 'key' : '61b6cf64ff09c351802afc2bf7de1189', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
-   </script>
-   <script src="https://www.highrevenueformat.com/61b6cf64ff09c351802afc2bf7de1189/invoke.js"></script>
- </div>
-
- <div class="ad-slot">
-   <script src="https://pl24149030.profitableratecpmnetwork.com/1c/a9/46/1ca946a99617087d265c4b4f20a49c5c.js"></script>
- </div>
-
- <h2 id="heading">Latest Videos</h2>
- <div class="grid" id="grid"></div>
-</main>
-
-<!-- Watch Modal & 5 Ads System -->
-<div id="watchModal" class="overlay hidden">
-  <div class="watch-dialog">
-    <button id="closeWatchBtn" style="float:right;" class="danger" onclick="closeModal()">✕ Close</button>
-    <h3 id="watchTitle">Video Title</h3>
-    
-    <div id="adVerificationArea">
-      <p style="color:#ffbd20;font-weight:bold;">Complete 5 Ad steps to unlock video playback</p>
-      
-      <div style="margin:10px 0;">
-        <script src="https://pl24148820.profitableratecpmnetwork.com/2d/7d/6e/2d7d6ef589dddc38c42ec94f414d5429.js"></script>
-      </div>
-
-      <div class="ad-step-box">
-        <p id="adStepText">Step 1 of 5</p>
-        <a id="adClickLink" href="#" target="_blank" onclick="onAdClicked()">
-          <button style="background:#00bcd4;color:#fff;padding:12px 18px;font-weight:bold;">Click Here to View Ad</button>
-        </a>
-      </div>
-      <button id="confirmAdBtn" disabled style="width:100%;margin-top:10px;">Complete Step Above First</button>
-    </div>
-
-    <div id="playerContainer" class="hidden">
-      <video id="mainPlayer" controls controlsList="nodownload" oncontextmenu="return false;" playsinline></video>
-      <p id="watchDesc" style="color:#aaa;font-size:14px;margin-top:10px;"></p>
-    </div>
-  </div>
-</div>
-
-<footer>
-  © <span id="year"></span> Video Hub[cite: 1]
-</footer>
-
 <script>
-"use strict";
+    // তোমার দেওয়া ডিরেক্ট অ্যাড লিংকগুলো
+    const adLinks = [
+        "https://www.profitableratecpmnetwork.com/q301y256m?key=9ad3a41fff7936759bcd90a0384516d6",
+        "https://www.profitableratecpmnetwork.com/cgmc8cxuq?key=57cd0652088b50ff88f910152f0dc6ac",
+        "https://www.profitableratecpmnetwork.com/g5iq4dhfw?key=a6662763b2ab88f1de870adea23fb4ef",
+        "https://www.profitableratecpmnetwork.com/acirc3cd?key=bc8f2b3bf08bc12fb14d1a3d7b4255bb"
+    ];
 
-// 👉 সরাসরি কোডের ভেতর ভিডিও লিস্ট (এখানে নতুন ভিডিও যোগ বা এডিট করতে পারবেন)
-const videosData = [
-  {
-    id: 1,
-    title: "ভাইরাল গোলাপি মেম এর নতুন ভাইরাল ভিডিও! 🤩🎬",
-    category: "Popular",
-    duration: "39s",
-    description: "Viral video description",
-    thumb: "https://i.postimg.cc/gkdnhXmq/Screenshot-20261019-211859-(1).jpg",
-    url: "https://www.dropbox.com/scl/fi/fb5ytgq00eb2d4lthuzf5/WhatsApp-Video-2026-10-20-at-1.15.43-PM-1.mp4?rlkey=2t6nmaqtec9em4kl6sjt2lwtz&st=g9ao4j5j&raw=1"
-  }
-  // নতুন ভিডিও যোগ করতে চাইলে নিচে কমা দিয়ে আরেকটি ব্র্যাকেট যুক্ত করুন:
-  /*
-  ,{
-    id: 2,
-    title: "আপনার দ্বিতীয় ভিডিওর টাইটেল",
-    category: "Latest",
-    duration: "39s",
-    description: "ডেসক্রিপশন এখানে দিন",
-    thumb: "ছবির_লিঙ্ক_এখানে",
-    url: "ভিডিওর_লিঙ্ক_raw=1_সহ"
-  }
-  */
-];
+    const gallery = document.getElementById("gallery");
 
-const adLinks = [
-  "https://www.profitableratecpmnetwork.com/r9tpq2mgt1?key=f80f32b10b8d7d996b40911857a6e971",
-  "https://pl24149030.profitableratecpmnetwork.com/1c/a9/46/1ca946a99617087d265c4b4f20a49c5c.js",
-  "https://pl24148820.profitableratecpmnetwork.com/2d/7d/6e/2d7d6ef589dddc38c42ec94f414d5429.js",
-  "https://www.profitableratecpmnetwork.com/r9tpq2mgt1?key=f80f32b10b8d7d996b40911857a6e971",
-  "https://pl24149030.profitableratecpmnetwork.com/1c/a9/46/1ca946a99617087d265c4b4f20a49c5c.js"
-];
+    // ১০০ টা ইমেজের জন্য লুপ (১০০ এর জায়গায় ১০,০০০ দিলে ১০,০০০ টা তৈরি হবে)
+    for(let i = 1; i <= 100; i++) {
+        let card = document.createElement("div");
+        card.className = "card";
+        
+        let img = document.createElement("img");
+        
+        // এখানে তোমার ছবিগুলোর নাম কল করা হয়েছে (যেমন: image-1.jpg, image-2.jpg)
+        img.src = "image-" + i + ".jpg"; 
+        img.style.cursor = "pointer"; // মাউস নিলে হাতের আইকন দেখাবে যাতে মানুষ ক্লিক করে
 
-let activeCategory = "All";
-let currentVideoPlaying = null;
-let currentAdStep = 1;
+        // ছবিতে ক্লিক করলেই তোমার অ্যাডগুলো ওপেন হবে
+        img.addEventListener('click', () => {
+            let randomAd = adLinks[Math.floor(Math.random() * adLinks.length)];
+            window.open(randomAd, '_blank');
+        });
 
-const grid = document.getElementById("grid");
-const search = document.getElementById("search");
-const watchModal = document.getElementById("watchModal");
-const adVerificationArea = document.getElementById("adVerificationArea");
-const playerContainer = document.getElementById("playerContainer");
-const mainPlayer = document.getElementById("mainPlayer");
-const confirmAdBtn = document.getElementById("confirmAdBtn");
-const adStepText = document.getElementById("adStepText");
-const adClickLink = document.getElementById("adClickLink");
-
-function render(){
-  grid.replaceChildren();
-  const query = search.value.trim().toLowerCase();
-
-  const filtered = videosData.filter(v =>
-    (activeCategory === "All" || v.category === activeCategory) &&
-    v.title.toLowerCase().includes(query)
-  );
-
-  filtered.forEach(v => {
-    const card = document.createElement("article");
-    card.className = "card";
-    const playBtn = document.createElement("button");
-    playBtn.type = "button";
-    
-    const thumb = document.createElement("div");
-    thumb.className = "thumb";
-    thumb.style.backgroundImage = `url('${v.thumb}')`;
-    thumb.textContent = "▶";
-
-    const info = document.createElement("div");
-    info.className = "info";
-    const title = document.createElement("h3");
-    title.textContent = v.title;
-    const category = document.createElement("p");
-    category.textContent = v.category + " · " + (v.duration || "39s");
-
-    info.append(title, category);
-    playBtn.append(thumb, info);
-    card.append(playBtn);
-    grid.append(card);
-
-    playBtn.addEventListener("click", () => startWatchProcess(v));
-  });
-
-  if(filtered.length === 0){
-    grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>No videos found.</p>";
-  }
-}
-
-function startWatchProcess(video){
-  currentVideoPlaying = video;
-  currentAdStep = 1;
-  document.getElementById("watchTitle").textContent = video.title;
-  document.getElementById("watchDesc").textContent = video.description;
-  
-  adVerificationArea.classList.remove("hidden");
-  playerContainer.classList.add("hidden");
-  mainPlayer.pause();
-  mainPlayer.removeAttribute("src");
-
-  updateAdStepUI();
-  watchModal.classList.remove("hidden");
-}
-
-function updateAdStepUI(){
-  adStepText.textContent = `Step ${currentAdStep} of 5: Click the link below to view ad`;
-  adClickLink.href = adLinks[currentAdStep - 1] || adLinks[0];
-  confirmAdBtn.disabled = true;
-  confirmAdBtn.textContent = "Click Ad Link First";
-}
-
-function onAdClicked(){
-  confirmAdBtn.disabled = false;
-  confirmAdBtn.textContent = `Confirm Step ${currentAdStep} Completed`;
-}
-
-confirmAdBtn.addEventListener("click", () => {
-  currentAdStep++;
-  if(currentAdStep <= 5){
-    updateAdTestUI(); // fallback
-    updateAdStepUI();
-  } else {
-    adVerificationArea.classList.add("hidden");
-    playerContainer.classList.remove("hidden");
-    mainPlayer.src = currentVideoPlaying.url;
-    mainPlayer.play();
-  }
-});
-
-function closeModal(){
-  mainPlayer.pause();
-  watchModal.classList.add("hidden");
-}
-
-search.addEventListener("input", render);
-document.querySelectorAll("#categories button").forEach(button => {
-  button.addEventListener("click", () => {
-    activeCategory = button.dataset.category;
-    document.querySelectorAll("#categories button").forEach(b => b.classList.toggle("active", b === button));
-    document.getElementById("heading").textContent = activeCategory === "All" ? "All Videos" : activeCategory + " Videos";
-    render();
-  });
-});
-
-document.getElementById("year").textContent = new Date().getFullYear();
-render();
+        card.appendChild(img);
+        gallery.appendChild(card);
+    }
 </script>
-</body>
-</html>
